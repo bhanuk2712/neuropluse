@@ -6,6 +6,141 @@
     <title>SynapseMonitor - Professional EEG Analysis</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+        <style>
+        /* Enhanced PSD Band Visualization */
+        .band-container {
+            margin: 20px 0;
+        }
+        
+        .band-bar {
+            margin: 12px 0;
+            padding: 8px 0;
+        }
+        
+        .band-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .band-bar-fill {
+            height: 24px;
+            border-radius: 12px;
+            transition: width 0.5s ease, background 0.3s ease;
+            display: flex;
+            align-items: center;
+            padding-left: 10px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .band-bar-progress {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Color coding for each frequency band */
+        #deltaBar { background: linear-gradient(90deg, #4A148C, #7B1FA2); }
+        #thetaBar { background: linear-gradient(90deg, #1565C0, #1976D2); }
+        #alphaBar { background: linear-gradient(90deg, #00695C, #00897B); }
+        #betaBar { background: linear-gradient(90deg, #EF6C00, #F57C00); }
+        #gammaBar { background: linear-gradient(90deg, #C62828, #E53935); }
+        
+        /* Enhanced Biometric Display */
+        .biometric-item {
+            margin: 15px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .biometric-label {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #00bcd4;
+        }
+        
+        .meter-bar {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            height: 30px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+            margin: 10px 0;
+        }
+        
+        .meter-fill {
+            height: 100%;
+            transition: width 0.5s ease, background 0.3s ease;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Dynamic color coding based on stress levels */
+        .stress-low { background: linear-gradient(90deg, #4CAF50, #66BB6A); }
+        .stress-moderate { background: linear-gradient(90deg, #FFA726, #FFB74D); }
+        .stress-high { background: linear-gradient(90deg, #EF5350, #E57373); }
+        
+        .focus-low { background: linear-gradient(90deg, #757575, #9E9E9E); }
+        .focus-moderate { background: linear-gradient(90deg, #42A5F5, #64B5F6); }
+        .focus-high { background: linear-gradient(90deg, #00BCD4, #26C6DA); }
+        
+        .meter-value {
+            text-align: right;
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        
+        /* Stress Info Box */
+        .stress-info {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(0, 188, 212, 0.1);
+            border-left: 3px solid #00bcd4;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .stress-info strong {
+            color: #00bcd4;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .stress-factors {
+            margin-top: 8px;
+            padding-left: 15px;
+        }
+        
+        .stress-factors li {
+            margin: 4px 0;
+        }
+        
+        /* Pulse animation for active indicators */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .active-indicator {
+            animation: pulse 2s infinite;
+        }
+    </style>
 </head>
 <body>
     <div class="background-gradient"></div>
@@ -119,30 +254,45 @@
                     </div>
                     <div class="band-container">
                         <div class="band-bar">
-                            <div class="band-label">Delta</div>
-                            <div class="band-bar-fill"><div class="band-bar-progress" id="deltaBar" style="width: 0%"></div></div>
-                            <div class="band-value" id="delta">0</div>
-                        </div>
+                                                            <div class="band-label">
+                                    <span>Delta (0.5-4 Hz)</span>
+                                    <span id="delta">0 µV²/Hz</span>
+                                </div>
+                                <div class="band-bar-progress">
+                                    <div class="band-bar-fill" id="deltaBar" style="width: 0%;"></div>
+                                </div>v>
                         <div class="band-bar">
-                            <div class="band-label">Theta</div>
-                            <div class="band-bar-fill"><div class="band-bar-progress" id="thetaBar" style="width: 0%"></div></div>
-                            <div class="band-value" id="theta">0</div>
-                        </div>
+                                                            <div class="band-label">
+                                    <span>Theta (4-8 Hz)</span>
+                                    <span id="theta">0 µV²/Hz</span>
+                                </div>
+                                <div class="band-bar-progress">
+                                    <div class="band-bar-fill" id="thetaBar" style="width: 0%;"></div>
+                                </div>v>
                         <div class="band-bar">
-                            <div class="band-label">Alpha</div>
-                            <div class="band-bar-fill"><div class="band-bar-progress" id="alphaBar" style="width: 0%"></div></div>
-                            <div class="band-value" id="alpha">0</div>
-                        </div>
+                                                            <div class="band-label">
+                                    <span>Alpha (8-13 Hz)</span>
+                                    <span id="alpha">0 µV²/Hz</span>
+                                </div>
+                                <div class="band-bar-progress">
+                                    <div class="band-bar-fill" id="alphaBar" style="width: 0%;"></div>
+                                </div>v>
                         <div class="band-bar">
-                            <div class="band-label">Beta</div>
-                            <div class="band-bar-fill"><div class="band-bar-progress" id="betaBar" style="width: 0%"></div></div>
-                            <div class="band-value" id="beta">0</div>
-                        </div>
+                                                            <div class="band-label">
+                                    <span>Beta (13-30 Hz)</span>
+                                    <span id="beta">0 µV²/Hz</span>
+                                </div>
+                                <div class="band-bar-progress">
+                                    <div class="band-bar-fill" id="betaBar" style="width: 0%;"></div>
+                                </div>v>
                         <div class="band-bar">
-                            <div class="band-label">Gamma</div>
-                            <div class="band-bar-fill"><div class="band-bar-progress" id="gammaBar" style="width: 0%"></div></div>
-                            <div class="band-value" id="gamma">0</div>
-                        </div>
+                                                            <div class="band-label">
+                                    <span>Gamma (30+ Hz)</span>
+                                    <span id="gamma">0 µV²/Hz</span>
+                                </div>
+                                <div class="band-bar-progress">
+                                    <div class="band-bar-fill" id="gammaBar" style="width: 0%;"></div>
+                                </div>v>
                     </div>
                 </div>
 
@@ -163,6 +313,25 @@
                             <div class="focus-value" id="focus">0%</div>
                         </div>
                     </div>
+
+                                        <div class="stress-info">
+                        <strong>⚠️ Understanding Stress Level Changes</strong>
+                        Stress levels fluctuate based on real-time EEG patterns. High Beta activity and reduced Alpha waves typically indicate increased cognitive load and stress.
+                        
+                        <div class="stress-factors">
+                            <strong>Key Factors Affecting Stress:</strong>
+                            <ul>
+                                <li>🧠 <strong>Beta Waves (13-30 Hz):</strong> High levels indicate active thinking or anxiety</li>
+                                <li>🧪 <strong>Alpha Waves (8-13 Hz):</strong> Low levels suggest reduced relaxation</li>
+                                <li>⚡ <strong>Gamma Waves (30+ Hz):</strong> Elevated during high mental processing</li>
+                                <li>👤 <strong>Individual Variability:</strong> Baseline levels differ per person</li>
+                                <li>⏰ <strong>Time of Day:</strong> Stress patterns vary throughout the day</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div style="margin-top: 15px; display: flex; gap: 10px;">
+                        <button class="btn btn-accent" style="flex: 1;" onclick="generateReport()">📥 Download Report</button>
+                    </div>
                     <div class="console-box" id="console">
                         <div class="console-line">> System initialized. Ready for scan.</div>
                     </div>
@@ -172,7 +341,7 @@
     </main>
 
     <footer class="dashboard-footer">
-        <p>SynapseMonitor Pro v2.2 | Research Grade Simulation</p>
+        <p>SynapseMonitor Pro v2.3 | Research Grade Simulation</p>
     </footer>
 
     <script src="eeg.js"></script>
@@ -185,15 +354,84 @@
                 line.textContent = '> ' + msg;
                 consoleBox.appendChild(line);
                 consoleBox.scrollTop = consoleBox.scrollHeight;
-                while (consoleBox.children.length > 6) consoleBox.removeChild(consoleBox.firstChild);
+                while (consoleBox.children.length > 5) consoleBox.removeChild(consoleBox.firstChild);
             }
         }
         function logConsole(msg) { addConsoleLog(msg); }
 
         window.onload = () => {
             if (typeof initEEGCharts === 'function') initEEGCharts();
-            logConsole("System core v2.2 active.");
+            logConsole("System core v2.3 active.");
         };
-    </script>
+    </sc
+        
+                <script>
+        // Enhanced PSD Band Visualization with Progress Bars
+        function updatePSDBands(bands) {
+            const maxValue = Math.max(bands.delta, bands.theta, bands.alpha, bands.beta, bands.gamma, 1);
+            
+            // Update Delta
+            const deltaPercent = (bands.delta / maxValue) * 100;
+            document.getElementById('deltaBar').style.width = deltaPercent + '%';
+            
+            // Update Theta
+            const thetaPercent = (bands.theta / maxValue) * 100;
+            document.getElementById('thetaBar').style.width = thetaPercent + '%';
+            
+            // Update Alpha
+            const alphaPercent = (bands.alpha / maxValue) * 100;
+            document.getElementById('alphaBar').style.width = alphaPercent + '%';
+            
+            // Update Beta
+            const betaPercent = (bands.beta / maxValue) * 100;
+            document.getElementById('betaBar').style.width = betaPercent + '%';
+            
+            // Update Gamma
+            const gammaPercent = (bands.gamma / maxValue) * 100;
+            document.getElementById('gammaBar').style.width = gammaPercent + '%';
+        }
+        
+        // Apply color-coded classes based on stress and focus levels
+        function updateBiometricColors() {
+            const stressFill = document.getElementById('stressFill');
+            const focusFill = document.getElementById('focusFill');
+            
+            if (stressFill) {
+                const stressValue = parseInt(stressFill.style.width) || 0;
+                stressFill.className = 'meter-fill';
+                
+                if (stressValue < 30) {
+                    stressFill.classList.add('stress-low');
+                } else if (stressValue < 70) {
+                    stressFill.classList.add('stress-moderate');
+                } else {
+                    stressFill.classList.add('stress-high');
+                }
+            }
+            
+            if (focusFill) {
+                const focusValue = parseInt(focusFill.style.width) || 0;
+                focusFill.className = 'meter-fill';
+                
+                if (focusValue < 30) {
+                    focusFill.classList.add('focus-low');
+                } else if (focusValue < 70) {
+                    focusFill.classList.add('focus-moderate');
+                } else {
+                    focusFill.classList.add('focus-high');
+                }
+            }
+        }
+        
+        // Override or extend the existing update functions from eeg.js
+        const originalUpdatePSD = window.updatePowerSpectralDensity;
+        window.updatePowerSpectralDensity = function(bands) {
+            if (originalUpdatePSD) originalUpdatePSD(bands);
+            updatePSDBands(bands);
+        };
+        
+        // Set up periodic color updates for biometric indicators
+        setInterval(updateBiometricColors, 500);
+        </script>ript>
 </body>
 </html>
