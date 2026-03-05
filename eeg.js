@@ -280,8 +280,7 @@ function updateStressIndicator() {
         stressLabel.textContent = 'Status: High Stress';
         stressLabel.style.color = '#ff6b6b';
     }
-    
-    // Update brain visualization
+    }, 1500);  // Realistic EEG update rate - 1.5 seconds    // Update brain visualization
     if (typeof updateBrainGlow === 'function') {
         updateBrainGlow(stress / 100);
     }
@@ -306,8 +305,7 @@ function startLive() {
     
     logConsole('[SUCCESS] Live EEG monitoring active');
 }
-
-function replayDataset() {
+    }, 1500);  // Realistic EEG update rate - 1.5 secondsfunction replayDataset() {
     if (isScanning) {
         clearInterval(scanInterval);
         isScanning = false;
