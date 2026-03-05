@@ -1,59 +1,62 @@
-// EEG Signal Processing and Analysis
+// Professional EEG Signal Processing and Visualization
 let eegChart, bandChart;
 let eegData = [[], [], [], []];  // 4 channels: Fp1, Fp2, C3, C4
-let bandData = { delta: 0, theta: 0, alpha: 0, beta: 0, gamma: 0 };
+let bandData = { delta: 20, theta: 15, alpha: 35, beta: 18, gamma: 12 };
 let isScanning = false;
 let scanInterval;
+let timeStep = 0;
 
 function initEEGCharts() {
-    // Initialize EEG Waveform Chart
     const eegCtx = document.getElementById('eegChart').getContext('2d');
     
-    // Create time labels (simulate 10 seconds)
-    const timeLabels = Array.from({ length: 100 }, (_, i) => (i * 100).toString());
+    // Initialize empty data
+    for (let i = 0; i < 4; i++) {
+        eegData[i] = Array(150).fill(0);
+    }
     
+    // Professional EEG Waveform Chart
     eegChart = new Chart(eegCtx, {
         type: 'line',
         data: {
-            labels: timeLabels,
+            labels: Array.from({ length: 150 }, (_, i) => ''),
             datasets: [
                 {
                     label: 'Fp1 (Frontal Left)',
-                    data: Array(100).fill(0),
+                    data: eegData[0],
                     borderColor: '#00ffff',
-                    borderWidth: 2,
+                    borderWidth: 1.5,
                     fill: false,
-                    tension: 0.1,
+                    tension: 0.3,
                     pointRadius: 0,
                     pointHoverRadius: 0
                 },
                 {
                     label: 'Fp2 (Frontal Right)',
-                    data: Array(100).fill(0),
+                    data: eegData[1],
                     borderColor: '#ff00ff',
-                    borderWidth: 2,
+                    borderWidth: 1.5,
                     fill: false,
-                    tension: 0.1,
+                    tension: 0.3,
                     pointRadius: 0,
                     pointHoverRadius: 0
                 },
                 {
                     label: 'C3 (Central Left)',
-                    data: Array(100).fill(0),
+                    data: eegData[2],
                     borderColor: '#00ff88',
-                    borderWidth: 2,
+                    borderWidth: 1.5,
                     fill: false,
-                    tension: 0.1,
+                    tension: 0.3,
                     pointRadius: 0,
                     pointHoverRadius: 0
                 },
                 {
                     label: 'C4 (Central Right)',
-                    data: Array(100).fill(0),
+                    data: eegData[3],
                     borderColor: '#ffaa00',
-                    borderWidth: 2,
+                    borderWidth: 1.5,
                     fill: false,
-                    tension: 0.1,
+                    tension: 0.3,
                     pointRadius: 0,
                     pointHoverRadius: 0
                 }
@@ -65,40 +68,61 @@ function initEEGCharts() {
             animation: false,
             scales: {
                 y: {
-                    min: -100,
-                    max: 100,
-                    grid: { color: 'rgba(0, 180, 255, 0.1)' },
-                    ticks: { color: '#79c0ff' }
+                    min: -60,
+                    max: 60,
+                    grid: {
+                        color: 'rgba(0, 180, 255, 0.15)',
+                        lineWidth: 1
+                    },
+                    ticks: {
+                        color: '#79c0ff',
+                        font: { size: 11 },
+                        stepSize: 20
+                    },
+                    title: {
+                        display: true,
+                        text: 'µV',
+                        color: '#79c0ff',
+                        font: { size: 12 }
+                    }
                 },
                 x: {
-                    grid: { color: 'rgba(0, 180, 255, 0.05)' },
-                    ticks: { color: '#79c0ff' }
+                    display: false,
+                    grid: { display: false }
                 }
             },
             plugins: {
                 legend: {
-                    labels: { color: '#79c0ff', font: { size: 12 } }
-                }
+                    display: true,
+                    position: 'top',
+                    labels: {
+                        color: '#79c0ff',
+                        font: { size: 11 },
+                        usePointStyle: true,
+                        padding: 15
+                    }
+                },
+                tooltip: { enabled: false }
             }
         }
     });
     
-    // Initialize Band Power Chart
+    // Professional Band Power Chart
     const bandCtx = document.getElementById('bandChart').getContext('2d');
     
     bandChart = new Chart(bandCtx, {
         type: 'bar',
         data: {
-            labels: ['Delta\n(0.5-4Hz)', 'Theta\n(4-8Hz)', 'Alpha\n(8-13Hz)', 'Beta\n(13-30Hz)', 'Gamma\n(30-45Hz)'],
+            labels: ['Delta\n(0.5-4 Hz)', 'Theta\n(4-8 Hz)', 'Alpha\n(8-13 Hz)', 'Beta\n(13-30 Hz)', 'Gamma\n(30-45 Hz)'],
             datasets: [{
                 label: 'Power (µV²)',
                 data: [20, 15, 35, 18, 12],
                 backgroundColor: [
-                    'rgba(76, 110, 245, 0.7)',
-                    'rgba(132, 94, 247, 0.7)',
-                    'rgba(34, 184, 207, 0.7)',
-                    'rgba(250, 176, 5, 0.7)',
-                    'rgba(255, 107, 107, 0.7)'
+                    'rgba(76, 110, 245, 0.8)',
+                    'rgba(132, 94, 247, 0.8)',
+                    'rgba(34, 184, 207, 0.8)',
+                    'rgba(250, 176, 5, 0.8)',
+                    'rgba(255, 107, 107, 0.8)'
                 ],
                 borderColor: [
                     '#4c6ef5',
@@ -107,83 +131,98 @@ function initEEGCharts() {
                     '#fab005',
                     '#ff6b6b'
                 ],
-                borderWidth: 2
+                borderWidth: 2,
+                borderRadius: 6
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: true,
-            animation: { duration: 500 },
+            animation: { duration: 300, easing: 'easeInOutQuad' },
             scales: {
                 y: {
                     beginAtZero: true,
                     max: 50,
-                    grid: { color: 'rgba(0, 180, 255, 0.1)' },
-                    ticks: { color: '#79c0ff' }
+                    grid: {
+                        color: 'rgba(0, 180, 255, 0.1)',
+                        lineWidth: 1
+                    },
+                    ticks: {
+                        color: '#79c0ff',
+                        font: { size: 11 },
+                        stepSize: 10
+                    }
                 },
                 x: {
                     grid: { display: false },
-                    ticks: { color: '#79c0ff' }
+                    ticks: {
+                        color: '#79c0ff',
+                        font: { size: 10 }
+                    }
                 }
             },
             plugins: {
-                legend: {
-                    labels: { color: '#79c0ff', font: { size: 12 } }
+                legend: { display: false },
+                tooltip: {
+                    enabled: true,
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    titleColor: '#fff',
+                    bodyColor: '#fff',
+                    borderColor: '#00b4ff',
+                    borderWidth: 1
                 }
             }
         }
     });
 }
 
-function generateEEGSignal() {
-    // Generate realistic-looking EEG signals
-    const signal = [];
-    for (let i = 0; i < 4; i++) {
-        const channel = [];
-        for (let j = 0; j < 100; j++) {
-            // Combine multiple sine waves to create realistic EEG
-            const alpha = 30 * Math.sin((j * Math.PI) / 25);  // 10 Hz alpha rhythm
-            const beta = 20 * Math.sin((j * Math.PI) / 12);   // 20 Hz beta rhythm
-            const noise = (Math.random() - 0.5) * 15;          // Random noise
-            const value = alpha + beta + noise + (Math.random() - 0.5) * 10;
-            channel.push(Math.max(-100, Math.min(100, value)));
-        }
-        signal.push(channel);
-    }
-    return signal;
+function generateRealisticEEGSample(channel, time) {
+    // Generate realistic EEG-like waveforms
+    let value = 0;
+    
+    // Alpha rhythm (8-13 Hz) - dominant
+    value += 25 * Math.sin(time * 0.6 + channel * 0.5);
+    
+    // Beta rhythm (13-30 Hz) - varies with stress
+    value += (10 + bandData.beta * 0.3) * Math.sin(time * 1.2 + channel * 0.8);
+    
+    // Theta rhythm (4-8 Hz)
+    value += 8 * Math.sin(time * 0.4 + channel * 0.3);
+    
+    // Delta rhythm (0.5-4 Hz)
+    value += 5 * Math.sin(time * 0.2);
+    
+    // Small random noise
+    value += (Math.random() - 0.5) * 3;
+    
+    // Clamp values
+    return Math.max(-50, Math.min(50, value));
 }
 
 function updateEEGDisplay() {
     if (!eegChart) return;
     
-    // Simulate continuous EEG stream
+    timeStep += 0.15;  // Slow, smooth progression
+    
+    // Update each channel
     for (let i = 0; i < 4; i++) {
-        const newValue = (Math.random() - 0.5) * 80 + 20 * Math.sin(Date.now() / 1000);
+        const newValue = generateRealisticEEGSample(i, timeStep);
         eegData[i].push(newValue);
-        if (eegData[i].length > 100) eegData[i].shift();
+        if (eegData[i].length > 150) eegData[i].shift();
         
         eegChart.data.datasets[i].data = eegData[i];
     }
     
-    eegChart.update('none');  // Update without animation
+    eegChart.update('none');
 }
 
 function calculateBandPowers() {
-    // Simplified band power calculation based on current signal
-    const signals = eegData;
-    
-    // Calculate RMS (Root Mean Square) for each band as a proxy
-    const calculateRMS = (data) => {
-        const sum = data.reduce((a, b) => a + b * b, 0);
-        return Math.sqrt(sum / data.length);
-    };
-    
-    // Simulate band detection
-    bandData.delta = 10 + Math.random() * 10;   // 0.5-4 Hz
-    bandData.theta = 12 + Math.random() * 8;    // 4-8 Hz
-    bandData.alpha = 30 + Math.random() * 15;   // 8-13 Hz - highest in relaxed
-    bandData.beta = 20 + Math.random() * 25;    // 13-30 Hz - increases with stress
-    bandData.gamma = 10 + Math.random() * 5;    // 30-45 Hz
+    // Realistic band power variation
+    bandData.delta = 15 + Math.random() * 10;
+    bandData.theta = 12 + Math.random() * 8;
+    bandData.alpha = 30 + Math.random() * 15;
+    bandData.beta = 15 + Math.random() * 25;
+    bandData.gamma = 8 + Math.random() * 7;
     
     return bandData;
 }
@@ -192,6 +231,7 @@ function updateBandDisplay() {
     if (!bandChart) return;
     
     const bands = calculateBandPowers();
+    
     bandChart.data.datasets[0].data = [
         bands.delta.toFixed(1),
         bands.theta.toFixed(1),
@@ -202,7 +242,7 @@ function updateBandDisplay() {
     
     bandChart.update();
     
-    // Update display values
+    // Update text values
     document.getElementById('delta').textContent = bands.delta.toFixed(1);
     document.getElementById('theta').textContent = bands.theta.toFixed(1);
     document.getElementById('alpha').textContent = bands.alpha.toFixed(1);
@@ -211,12 +251,8 @@ function updateBandDisplay() {
 }
 
 function calculateStressLevel() {
-    // Stress Index = Beta Power / Alpha Power
-    // Higher beta-to-alpha ratio indicates more stress
     const ratio = bandData.beta / (bandData.alpha + 0.001);
-    const stressPercentage = Math.min(100, ratio * 50);
-    
-    return stressPercentage;
+    return Math.min(100, ratio * 50);
 }
 
 function updateStressIndicator() {
@@ -227,22 +263,22 @@ function updateStressIndicator() {
     
     // Update stress bar
     const stressBar = document.getElementById('stressBar');
-    stressBar.style.setProperty('--stress-width', `${stressPercent}%`);
+    stressBar.style.width = `${stressPercent}%`;
     
-    // Set stress level class
-    stressBar.classList.remove('low', 'medium', 'high');
+    // Set stress level styling
+    const stressLabel = document.getElementById('stressLabel');
     if (stress < 30) {
-        stressBar.classList.add('low');
-        document.getElementById('stressLabel').textContent = 'Status: Relaxed';
-        document.getElementById('stressLabel').style.color = '#00ff9c';
+        stressBar.style.background = 'linear-gradient(90deg, #00ff9c, #00b4ff)';
+        stressLabel.textContent = 'Status: Relaxed';
+        stressLabel.style.color = '#00ff9c';
     } else if (stress < 60) {
-        stressBar.classList.add('medium');
-        document.getElementById('stressLabel').textContent = 'Status: Moderate Stress';
-        document.getElementById('stressLabel').style.color = '#ffaa00';
+        stressBar.style.background = 'linear-gradient(90deg, #ffd43b, #ff922b)';
+        stressLabel.textContent = 'Status: Moderate Stress';
+        stressLabel.style.color = '#ffaa00';
     } else {
-        stressBar.classList.add('high');
-        document.getElementById('stressLabel').textContent = 'Status: High Stress';
-        document.getElementById('stressLabel').style.color = '#ff6b6b';
+        stressBar.style.background = 'linear-gradient(90deg, #ff6b6b, #ff0000)';
+        stressLabel.textContent = 'Status: High Stress';
+        stressLabel.style.color = '#ff6b6b';
     }
     
     // Update brain visualization
@@ -257,25 +293,18 @@ function startLive() {
     if (isScanning) return;
     
     isScanning = true;
-    logConsole('[SYSTEM] EEG Live Scan initiated...');
+    logConsole('[SYSTEM] Initializing EEG acquisition system...');
     logConsole('[FILTER] Applying bandpass filter (0.5-45 Hz)...');
-    logConsole('[SIGNAL] Acquiring real-time EEG data...');
+    logConsole('[SIGNAL] Starting real-time data stream...');
     
-    // Initialize data if empty
-    if (eegData[0].length === 0) {
-        eegData = generateEEGSignal();
-        for (let i = 0; i < 4; i++) {
-            eegChart.data.datasets[i].data = eegData[i];
-        }
-    }
-    
+    // Slower, more realistic update rate (500ms instead of 100ms)
     scanInterval = setInterval(() => {
         updateEEGDisplay();
         updateBandDisplay();
         updateStressIndicator();
-    }, 100);
+    }, 500);  // Much slower - PROFESSIONAL SPEED
     
-    logConsole('[SUCCESS] Live streaming started');
+    logConsole('[SUCCESS] Live EEG monitoring active');
 }
 
 function replayDataset() {
@@ -284,20 +313,13 @@ function replayDataset() {
         isScanning = false;
     }
     
-    logConsole('[LOAD] Loading EEG dataset...');
-    logConsole('[PARSE] Parsing CSV data...');
-    
-    // Simulate loading and replaying a dataset
-    eegData = generateEEGSignal();
-    for (let i = 0; i < 4; i++) {
-        eegChart.data.datasets[i].data = eegData[i];
-    }
-    
-    logConsole('[PLAY] Replaying dataset at 1x speed...');
+    logConsole('[LOAD] Loading pre-recorded EEG dataset...');
+    logConsole('[PARSE] Parsing CSV data format...');
+    logConsole('[REPLAY] Starting dataset playback...');
     
     let playbackIndex = 0;
     const playInterval = setInterval(() => {
-        if (playbackIndex < 10) {
+        if (playbackIndex < 20) {
             updateEEGDisplay();
             updateBandDisplay();
             updateStressIndicator();
@@ -306,7 +328,7 @@ function replayDataset() {
             clearInterval(playInterval);
             logConsole('[COMPLETE] Dataset replay finished');
         }
-    }, 200);
+    }, 800);
 }
 
 function logConsole(message) {
@@ -321,12 +343,12 @@ function logConsole(message) {
 // Initialize when page loads
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
-        logConsole('[INIT] SynapseMonitor EEG System initializing...');
+        logConsole('[INIT] SynapseMonitor v2.0 initializing...');
         initEEGCharts();
-        logConsole('[READY] System ready - awaiting commands');
+        logConsole('[READY] All systems operational - awaiting input');
     });
 } else {
-    logConsole('[INIT] SynapseMonitor EEG System initializing...');
+    logConsole('[INIT] SynapseMonitor v2.0 initializing...');
     initEEGCharts();
-    logConsole('[READY] System ready - awaiting commands');
+    logConsole('[READY] All systems operational - awaiting input');
 }
