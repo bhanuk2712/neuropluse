@@ -1,174 +1,155 @@
-// Enhanced 3D Brain Visualization with Sketchfab Model
+// Three.js 3D Brain Visualization with Heat Map Stress Detection
 let scene, camera, renderer, brain, controls;
 let brainMeshes = [];
 let stressLevel = 0;
 let targetStress = 0;
-let sketchfabClient;
+let animationId;
 
 function initBrain() {
     const container = document.getElementById('brainContainer');
-    
-    // Initialize Sketchfab Viewer
-    const iframe = document.createElement('iframe');
-    iframe.style.width = '100%';
-    iframe.style.height = '100%';
-    iframe.style.border = 'none';
-    iframe.allow = 'autoplay; fullscreen; xr-spatial-tracking';
-    iframe.src = 'https://sketchfab.com/models/7a27c17fd6c0488bb31ab093236a47fb/embed?autostart=1&ui_theme=light&dnt=1';
-    
-    container.appendChild(iframe);
-    
-    // Initialize Sketchfab API
-    const client = new Sketchfab(iframe);
-    
-    client.init({
-        success: function onSuccess(api) {
-            sketchfabClient = api;
-            api.start();
-            api.addEventListener('viewerready', function() {
-                console.log('[SKETCHFAB] Viewer is ready');
-                
-                // Configure viewer settings
-                api.setCameraLookAt([0, 0, 3], [0, 0, 0], 1);
-                api.setEnableCameraConstraints(false, {});
-                
-                // Start animation loop for stress visualization
-                animateStress();
-            });
-        },
-        error: function onError() {
-            console.log('[ERROR] Sketchfab API initialization failed');
-            // Fallback to Three.js basic brain
-            initFallbackBrain(container);
-        }
-    });
-}
+    if (!container) return;
 
-function initFallbackBrain(container) {
-    // Fallback Three.js scene if Sketchfab fails
+    // Scene setup
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xf5f5f5);
-    
+    scene.background = new THREE.Color(0x0a0e27);
+
     // Camera
     camera = new THREE.PerspectiveCamera(
-        60,
+        75,
         container.clientWidth / container.clientHeight,
         0.1,
         1000
     );
-    camera.position.set(0, 1, 4);
-    
+    camera.position.set(0, 0, 3);
+
     // Renderer
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(container.clientWidth, container.clientHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.shadowMap.enabled = true;
     container.appendChild(renderer.domElement);
-    
-    // Mouse Controls
-    addMouseControls();
-    
+
     // Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
     scene.add(ambientLight);
-    
-    const directionalLight1 = new THREE.DirectionalLight(0xffffff, 0.5);
-    directionalLight1.position.set(5, 5, 5);
-    scene.add(directionalLight1);
-    
-    const directionalLight2 = new THREE.DirectionalLight(0xaaccff, 0.3);
-    directionalLight2.position.set(-5, 3, -5);
-    scene.add(directionalLight2);
-    
-    // Create stylized brain geometry
-    createStylizedBrain();
-    
-    // Start animation
+
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    directionalLight.position.set(5, 5, 5);
+    directionalLight.castShadow = true;
+    directionalLight.shadow.mapSize.width = 2048;
+    directionalLight.shadow.mapSize.height = 2048;
+    scene.add(directionalLight);
+
+    const pointLight = new THREE.PointLight(0x00ff88, 0.5);
+    pointLight.position.set(-5, 3, 3);
+    scene.add(pointLight);
+
+    // Create detailed brain
+    createDetailedBrain();
+
+    // Mouse controls
+    addMouseControls();
+
+    // Handle window resize
+    window.addEventListener('resize', onWindowResize);
+
+    // Start animation loop
     animate();
 }
 
-function createStylizedBrain() {
+function createDetailedBrain() {
     brain = new THREE.Group();
-    
-    // Main brain structure (two hemispheres)
-    const hemisphereGeometry = new THREE.SphereGeometry(1, 32, 32, 0, Math.PI);
-    
-    // Left hemisphere - subtle pink/peach color
+
+    // Create main cerebral hemispheres with higher geometry
+    const hemisphereGeometry = new THREE.IcosahedronGeometry(1, 6);
+
+    // Left hemisphere
     const leftMaterial = new THREE.MeshPhongMaterial({
-        color: 0xffb4a2,
-        shininess: 30,
-        transparent: true,
-        opacity: 0.95
+        color: 0x4a5f8f,
+        emissive: 0x1a3f5f,
+        shininess: 100,
+        wireframe: false
     });
     const leftHemisphere = new THREE.Mesh(hemisphereGeometry, leftMaterial);
-    leftHemisphere.rotation.y = Math.PI / 2;
-    leftHemisphere.position.x = -0.05;
+    leftHemisphere.position.x = -0.1;
+    leftHemisphere.castShadow = true;
+    leftHemisphere.receiveShadow = true;
     brain.add(leftHemisphere);
     brainMeshes.push(leftHemisphere);
-    
+
     // Right hemisphere
     const rightMaterial = new THREE.MeshPhongMaterial({
-        color: 0xffb4a2,
-        shininess: 30,
-        transparent: true,
-        opacity: 0.95
+        color: 0x4a5f8f,
+        emissive: 0x1a3f5f,
+        shininess: 100,
+        wireframe: false
     });
     const rightHemisphere = new THREE.Mesh(hemisphereGeometry, rightMaterial);
-    rightHemisphere.rotation.y = -Math.PI / 2;
-    rightHemisphere.position.x = 0.05;
+    rightHemisphere.position.x = 0.1;
+    rightHemisphere.castShadow = true;
+    rightHemisphere.receiveShadow = true;
     brain.add(rightHemisphere);
     brainMeshes.push(rightHemisphere);
-    
-    // Cerebellum (back lower part)
-    const cerebellumGeometry = new THREE.SphereGeometry(0.4, 32, 32);
+
+    // Cerebellum (back lower region)
+    const cerebellumGeometry = new THREE.SphereGeometry(0.35, 32, 32);
     const cerebellumMaterial = new THREE.MeshPhongMaterial({
-        color: 0xffc4b7,
-        shininess: 30,
-        transparent: true,
-        opacity: 0.95
+        color: 0x5a7f9f,
+        emissive: 0x2a4f6f,
+        shininess: 80
     });
     const cerebellum = new THREE.Mesh(cerebellumGeometry, cerebellumMaterial);
-    cerebellum.position.set(0, -0.6, -0.6);
-    cerebellum.scale.set(1, 0.8, 1);
+    cerebellum.position.set(0, -0.7, -0.8);
+    cerebellum.scale.set(1, 0.7, 1);
+    cerebellum.castShadow = true;
+    cerebellum.receiveShadow = true;
     brain.add(cerebellum);
     brainMeshes.push(cerebellum);
-    
+
     // Brain stem
-    const stemGeometry = new THREE.CylinderGeometry(0.2, 0.25, 0.8, 16);
+    const stemGeometry = new THREE.CylinderGeometry(0.15, 0.2, 0.7, 16);
     const stemMaterial = new THREE.MeshPhongMaterial({
-        color: 0xffd4c7,
-        shininess: 30,
-        transparent: true,
-        opacity: 0.95
+        color: 0x6a8faf,
+        emissive: 0x3a5f7f,
+        shininess: 90
     });
     const brainStem = new THREE.Mesh(stemGeometry, stemMaterial);
-    brainStem.position.set(0, -1, -0.3);
+    brainStem.position.set(0, -1.1, -0.2);
+    brainStem.castShadow = true;
+    brainStem.receiveShadow = true;
     brain.add(brainStem);
     brainMeshes.push(brainStem);
-    
-    // Add surface details (sulci/gyri effect)
-    for (let i = 0; i < 40; i++) {
-        const detailGeometry = new THREE.SphereGeometry(0.08, 8, 8);
+
+    // Add surface detail nodes (sulci/gyri effect)
+    const detailCount = 60;
+    for (let i = 0; i < detailCount; i++) {
+        const detailGeometry = new THREE.SphereGeometry(0.06, 8, 8);
         const detailMaterial = new THREE.MeshPhongMaterial({
-            color: 0xffa492,
-            transparent: true,
-            opacity: 0.7
+            color: 0x3a4f7f,
+            emissive: 0x1a2f5f,
+            shininess: 70
         });
         const detail = new THREE.Mesh(detailGeometry, detailMaterial);
-        
-        // Random position on brain surface
+
+        // Random position on surface
         const theta = Math.random() * Math.PI * 2;
         const phi = Math.random() * Math.PI;
-        const radius = 1.05;
-        
+        const radius = 1.08;
+
         detail.position.x = radius * Math.sin(phi) * Math.cos(theta);
         detail.position.y = radius * Math.sin(phi) * Math.sin(theta) * 0.8;
         detail.position.z = radius * Math.cos(phi);
-        
+
+        detail.castShadow = true;
+        detail.receiveShadow = true;
         brain.add(detail);
         brainMeshes.push(detail);
     }
-    
+
+    // Initial rotation
     brain.rotation.x = 0.2;
+    brain.rotation.z = 0.1;
+
     scene.add(brain);
 }
 
@@ -176,129 +157,94 @@ function addMouseControls() {
     const container = renderer.domElement;
     let isDragging = false;
     let previousMousePosition = { x: 0, y: 0 };
-    
+
     container.addEventListener('mousedown', (e) => {
         isDragging = true;
+        previousMousePosition = { x: e.offsetX, y: e.offsetY };
     });
-    
+
     container.addEventListener('mousemove', (e) => {
         if (isDragging && brain) {
-            const deltaMove = {
-                x: e.offsetX - previousMousePosition.x,
-                y: e.offsetY - previousMousePosition.y
-            };
-            
-            brain.rotation.y += deltaMove.x * 0.01;
-            brain.rotation.x += deltaMove.y * 0.01;
+            const deltaX = e.offsetX - previousMousePosition.x;
+            const deltaY = e.offsetY - previousMousePosition.y;
+
+            brain.rotation.y += deltaX * 0.01;
+            brain.rotation.x += deltaY * 0.01;
         }
-        
-        previousMousePosition = {
-            x: e.offsetX,
-            y: e.offsetY
-        };
+        previousMousePosition = { x: e.offsetX, y: e.offsetY };
     });
-    
+
     container.addEventListener('mouseup', () => {
         isDragging = false;
     });
-    
+
     // Mouse wheel zoom
     container.addEventListener('wheel', (e) => {
         e.preventDefault();
-        camera.position.z += e.deltaY * 0.01;
-        camera.position.z = Math.max(2, Math.min(10, camera.position.z));
+        camera.position.z += e.deltaY * 0.005;
+        camera.position.z = Math.max(1.5, Math.min(8, camera.position.z));
     });
 }
 
 function updateStressVisualization(stress) {
     targetStress = stress / 100; // Normalize to 0-1
     
-    if (sketchfabClient) {
-        // Update Sketchfab model materials
-        sketchfabClient.getMaterialList(function(err, materials) {
-            if (!err && materials) {
-                materials.forEach(function(material) {
-                    const color = getStressColor(stress);
-                    sketchfabClient.setMaterial(material, {
-                        channels: {
-                            EmitColor: {
-                                enable: true,
-                                factor: targetStress * 0.3,
-                                color: color
-                            }
-                        }
-                    });
-                });
-            }
-        });
-    } else if (brainMeshes.length > 0) {
-        // Update fallback Three.js materials with smooth transition
-        stressLevel += (targetStress - stressLevel) * 0.02;
-        
-        brainMeshes.forEach((mesh) => {
-            if (mesh.material) {
-                const baseColor = new THREE.Color(0xffb4a2);
-                const stressColor = new THREE.Color(getStressColorHex(stress));
-                mesh.material.color.lerpColors(baseColor, stressColor, stressLevel);
-                mesh.material.emissive = stressColor;
-                mesh.material.emissiveIntensity = stressLevel * 0.3;
-            }
-        });
-    }
-}
+    // Smooth interpolation
+    stressLevel += (targetStress - stressLevel) * 0.05;
 
-function getStressColor(stress) {
-    // Color gradient: Soft green (low) -> Soft yellow (medium) -> Soft red (high)
-    if (stress < 33) {
-        return [0.6, 0.9, 0.6]; // Soft Green
-    } else if (stress < 66) {
-        return [0.9, 0.85, 0.5]; // Soft Yellow
-    } else {
-        return [0.9, 0.6, 0.6]; // Soft Red
-    }
-}
+    // Update brain mesh colors based on stress
+    brainMeshes.forEach((mesh, index) => {
+        if (mesh.material) {
+            let stressColor = new THREE.Color();
+            
+            // Color gradient: Blue (low stress) -> Green -> Yellow -> Orange -> Red (high stress)
+            if (stressLevel < 0.25) {
+                // Blue to Green
+                stressColor.setHSL(0.55 - stressLevel * 0.8, 0.8, 0.4);
+            } else if (stressLevel < 0.5) {
+                // Green to Yellow
+                stressColor.setHSL(0.35 - (stressLevel - 0.25) * 0.8, 0.8, 0.45);
+            } else if (stressLevel < 0.75) {
+                // Yellow to Orange
+                stressColor.setHSL(0.1 - (stressLevel - 0.5) * 0.4, 0.9, 0.5);
+            } else {
+                // Orange to Red
+                stressColor.setHSL(0 - (stressLevel - 0.75) * 0.2, 1.0, 0.5);
+            }
 
-function getStressColorHex(stress) {
-    // Hex color gradient for Three.js
-    if (stress < 33) {
-        return 0x99e699; // Soft Green
-    } else if (stress < 66) {
-        return 0xe6d980; // Soft Yellow
-    } else {
-        return 0xe69999; // Soft Red
-    }
+            // Apply color with intensity variation by index
+            const intensity = 0.5 + (index % brainMeshes.length) / (brainMeshes.length * 2);
+            mesh.material.color.copy(stressColor);
+            mesh.material.emissive.copy(stressColor).multiplyScalar(stressLevel * 0.7);
+            mesh.material.emissiveIntensity = stressLevel * 0.5;
+        }
+    });
 }
 
 function animate() {
-    requestAnimationFrame(animate);
-    
+    animationId = requestAnimationFrame(animate);
+
     if (brain) {
-        brain.rotation.y += 0.0005; // Slower rotation
+        // Subtle auto-rotation when not dragging
+        brain.rotation.y += 0.0002;
     }
-    
+
     if (renderer && scene && camera) {
         renderer.render(scene, camera);
     }
 }
 
-function animateStress() {
-    // This runs for Sketchfab viewer
-    setInterval(() => {
-        if (sketchfabClient && targetStress !== stressLevel) {
-            stressLevel += (targetStress - stressLevel) * 0.02;
-        }
-    }, 100);
-}
-
-// Handle window resize
-window.addEventListener('resize', () => {
+function onWindowResize() {
     const container = document.getElementById('brainContainer');
-    if (camera && renderer) {
-        camera.aspect = container.clientWidth / container.clientHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(container.clientWidth, container.clientHeight);
-    }
-});
+    if (!container) return;
+
+    const width = container.clientWidth;
+    const height = container.clientHeight;
+
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+    renderer.setSize(width, height);
+}
 
 // Initialize on page load
 if (document.readyState === 'loading') {
