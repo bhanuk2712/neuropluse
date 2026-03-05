@@ -70,11 +70,10 @@ body {
 .btn-secondary { background: rgba(0, 113, 227, 0.1); color: var(--accent); }
 
 .main-content { max-width: 1200px; margin: 0 auto; padding: 0 40px 60px; }
-.dashboard-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
 
 .glass-card {
     background: var(--glass); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
-    border: 1px solid var(--glass-border); border-radius: 28px;
+    .dashboard-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; max-width: 100%; }
     padding: 32px; box-shadow: 0 10px 40px rgba(0,0,0,0.04);
 }
 
