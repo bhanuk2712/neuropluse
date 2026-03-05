@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SynapseMonitor - EEG Stress Analysis Platform</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+</head>
+<body>
+    <header>
+        <h1>🧠 SynapseMonitor</h1>
+        <p>Professional EEG Stress Analysis Platform</p>
+        <div class="button-group">
+            <button onclick="startLive()">▶ Start Live Scan</button>
+            <button onclick="replayDataset()">⟳ Replay Dataset</button>
+            <button onclick="generateReport()">📊 Generate Report</button>
+        </div>
+    </header>
+
+    <section id="brain-section">
+        <h2>3D Brain Visualization</h2>
+        <div id="brainContainer"></div>
+    </section>
+
+    <section id="eeg-section">
+        <h2>Multi-Channel EEG Monitor</h2>
+        <canvas id="eegChart"></canvas>
+    </section>
+
+    <section id="band-section">
+        <h2>Frequency Band Analysis</h2>
+        <canvas id="bandChart"></canvas>
+        <div class="bands">
+            <div><strong>Delta:</strong> <span id="delta">0</span> µV²</div>
+            <div><strong>Theta:</strong> <span id="theta">0</span> µV²</div>
+            <div><strong>Alpha:</strong> <span id="alpha">0</span> µV²</div>
+            <div><strong>Beta:</strong> <span id="beta">0</span> µV²</div>
+            <div><strong>Gamma:</strong> <span id="gamma">0</span> µV²</div>
+        </div>
+    </section>
+
+    <section id="stress-section">
+        <h2>Stress Level Indicator</h2>
+        <div class="stress-container">
+            <div id="stressBar" class="stress-bar"></div>
+            <h3 id="stress">Stress: 0%</h3>
+            <p id="stressLabel">Status: Relaxed</p>
+        </div>
+    </section>
+
+    <section id="console-section">
+        <h2>System Console</h2>
+        <div id="console" class="console"></div>
+    </section>
+
+    <script src="brain.js"></script>
+    <script src="eeg.js"></script>
+    <script src="report.js"></script>
+</body>
+</html>
