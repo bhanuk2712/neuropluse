@@ -147,5 +147,4 @@ canvas {
     .header-container { padding: 0 20px; }
     .main-content { padding: 0 20px 40px; }
     .hero-section { padding: 40px 20px; }
-    .hero-section h2 { font-size: 32px; }
-}
+    .main-content { padding: 0 60px 40px; max-width: 1600px; margin: 0 auto; }}
