@@ -28,10 +28,38 @@
         </div>
     </header>
 
+    <section class="story-section">
+        <div class="story-container">
+            <div class="story-content">
+                <h2>The Science of Stress: A Neural Perspective</h2>
+                <p>In the modern world, stress is more than a feeling—it's a physiological signature written in our brain waves. SynapseMonitor decodes this signature in real-time. By monitoring the subtle electrical shifts across the cerebral cortex, we can identify the transition from "Flow" to "Fight or Flight" before you even feel the tension.</p>
+                <div class="working-process">
+                    <h3>Decoding the Neural Signal: Our Process</h3>
+                    <div class="process-grid">
+                        <div class="process-step">
+                            <span class="step-num">01</span>
+                            <h4>Signal Acquisition</h4>
+                            <p>Multi-channel EEG sensors capture micro-voltage fluctuations from the frontal, parietal, temporal, and occipital lobes.</p>
+                        </div>
+                        <div class="process-step">
+                            <span class="step-num">02</span>
+                            <h4>Fast Fourier Transform</h4>
+                            <p>Raw temporal waves are decomposed into their constituent frequencies (Delta, Theta, Alpha, Beta) using FFT algorithms.</p>
+                        </div>
+                        <div class="process-step">
+                            <span class="step-num">03</span>
+                            <h4>Biometric Correlation</h4>
+                            <p>We analyze the ratio between high-beta (stress) and alpha (relaxation) waves to calculate your objective Stress Index.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <section class="hero-section">
         <div class="hero-content">
-            <h2>Professional EEG Stress Analysis</h2>
-            <p>Real-time neural monitoring with precision signal processing.</p>
+            <h2>Live Neural Dashboard</h2>
             <div class="control-buttons">
                 <button class="btn btn-primary" onclick="startLiveScan()">🔬 Start Live Scan</button>
                 <button class="btn btn-secondary" onclick="resetMonitor()">🔄 Reset Monitor</button>
@@ -40,74 +68,72 @@
     </section>
 
     <main class="dashboard-container">
-        <!-- EEG Waveforms Section - Top 2x2 Grid -->
+        <!-- EEG Waveforms Section -->
         <section class="waveform-section">
             <div class="waveform-grid">
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3>Channel 1</h3>
-                        <span class="channel-badge">Frontal Lobe</span>
+                        <h3>Channel 1 - Frontal</h3>
                     </div>
                     <canvas id="eegChart1"></canvas>
                 </div>
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3>Channel 2</h3>
-                        <span class="channel-badge">Parietal Lobe</span>
+                        <h3>Channel 2 - Parietal</h3>
                     </div>
                     <canvas id="eegChart2"></canvas>
                 </div>
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3>Channel 3</h3>
-                        <span class="channel-badge">Temporal Lobe</span>
+                        <h3>Channel 3 - Temporal</h3>
                     </div>
                     <canvas id="eegChart3"></canvas>
                 </div>
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3>Channel 4</h3>
-                        <span class="channel-badge">Occipital Lobe</span>
+                        <h3>Channel 4 - Occipital</h3>
                     </div>
                     <canvas id="eegChart4"></canvas>
                 </div>
             </div>
         </section>
 
-        <!-- Frequency Analysis Section - Bottom Equal Space -->
+        <!-- Analysis & Reports Section -->
         <section class="analysis-section">
-            <div class="section-header">
-                <h2>Frequency Band Analysis</h2>
-                <a href="#" class="link-button">Spectral Density →</a>
-            </div>
-            <div class="frequency-grid">
-                <div class="chart-card">
+            <div class="analysis-grid">
+                <!-- Unified Frequency Graph -->
+                <div class="chart-card freq-card">
                     <div class="chart-header">
-                        <h3>Delta Waves</h3>
-                        <span class="frequency-range">0.5-4 Hz</span>
+                        <h3>Neural Power Spectrum</h3>
+                        <span class="frequency-range">FFT Analysis</span>
                     </div>
-                    <canvas id="deltaChart"></canvas>
+                    <canvas id="unifiedFreqChart"></canvas>
                 </div>
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <h3>Theta Waves</h3>
-                        <span class="frequency-range">4-8 Hz</span>
+
+                <!-- Stress & Biometric Report -->
+                <div class="report-card">
+                    <div class="report-header">
+                        <h3>Neural Biometric Report</h3>
+                        <span class="report-status" id="stressLevel">STABLE</span>
                     </div>
-                    <canvas id="thetaChart"></canvas>
-                </div>
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <h3>Alpha Waves</h3>
-                        <span class="frequency-range">8-13 Hz</span>
+                    <div class="biometric-stats">
+                        <div class="stat-item">
+                            <label>Stress Index</label>
+                            <div class="stat-value" id="stressIndex">12%</div>
+                            <div class="stat-bar"><div class="stat-fill" id="stressFill" style="width: 12%"></div></div>
+                        </div>
+                        <div class="stat-item">
+                            <label>Cognitive Load</label>
+                            <div class="stat-value" id="cogLoad">Low</div>
+                        </div>
+                        <div class="stat-item">
+                            <label>Attention Score</label>
+                            <div class="stat-value" id="attScore">88/100</div>
+                        </div>
                     </div>
-                    <canvas id="alphaChart"></canvas>
-                </div>
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <h3>Beta Waves</h3>
-                        <span class="frequency-range">13-30 Hz</span>
+                    <div class="report-footer">
+                        <p id="reportSummary">System normal. Brain activity indicates a state of relaxed focus.</p>
                     </div>
-                    <canvas id="betaChart"></canvas>
                 </div>
             </div>
         </section>
@@ -120,68 +146,34 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                animation: {
-                    duration: 200
-                },
+                animation: { duration: 200 },
                 scales: {
-                    x: {
-                        display: false
-                    },
+                    x: { display: false },
                     y: {
-                        beginAtZero: false,
-                        min: -100,
-                        max: 100,
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.05)'
-                        },
-                        ticks: {
-                            color: '#888'
-                        }
+                        beginAtZero: false, min: -100, max: 100,
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: '#888' }
                     }
                 },
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    tooltip: {
-                        enabled: false
-                    }
-                },
-                elements: {
-                    point: {
-                        radius: 0
-                    },
-                    line: {
-                        tension: 0.4
-                    }
-                }
+                plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                elements: { point: { radius: 0 }, line: { tension: 0.4 } }
             }
         };
 
-        const frequencyConfig = {
+        const unifiedFreqConfig = {
             type: 'bar',
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: {
-                    x: {
-                        display: false
-                    },
                     y: {
-                        beginAtZero: true,
-                        max: 100,
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.05)'
-                        },
-                        ticks: {
-                            color: '#888'
-                        }
+                        beginAtZero: true, max: 100,
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: '#888' }
                     }
                 },
                 plugins: {
-                    legend: {
-                        display: false
-                    }
+                    legend: { display: true, position: 'bottom', labels: { color: '#888' } }
                 }
             }
         };
@@ -189,7 +181,6 @@
         // Initialize EEG Charts
         const eegCharts = [];
         const eegColors = ['#3b82f6', '#06b6d4', '#10b981', '#f59e0b'];
-        
         for (let i = 1; i <= 4; i++) {
             const ctx = document.getElementById(`eegChart${i}`).getContext('2d');
             eegCharts.push(new Chart(ctx, {
@@ -206,24 +197,19 @@
             }));
         }
 
-        // Initialize Frequency Charts
-        const freqCharts = [];
-        const freqColors = ['#8b5cf6', '#ec4899', '#f59e0b', '#10b981'];
-        const freqLabels = ['delta', 'theta', 'alpha', 'beta'];
-        
-        freqLabels.forEach((label, i) => {
-            const ctx = document.getElementById(`${label}Chart`).getContext('2d');
-            freqCharts.push(new Chart(ctx, {
-                ...frequencyConfig,
-                data: {
-                    labels: Array(20).fill(''),
-                    datasets: [{
-                        data: Array(20).fill(0),
-                        backgroundColor: freqColors[i],
-                        borderRadius: 4
-                    }]
-                }
-            }));
+        // Initialize Unified Frequency Chart
+        const freqCtx = document.getElementById('unifiedFreqChart').getContext('2d');
+        const unifiedFreqChart = new Chart(freqCtx, {
+            ...unifiedFreqConfig,
+            data: {
+                labels: ['Delta', 'Theta', 'Alpha', 'Beta'],
+                datasets: [{
+                    label: 'Power (µV²)',
+                    data: [0, 0, 0, 0],
+                    backgroundColor: ['#8b5cf6', '#ec4899', '#f59e0b', '#10b981'],
+                    borderRadius: 8
+                }]
+            }
         });
 
         // Animation Loop
@@ -231,60 +217,87 @@
 
         function generateEEGData() {
             const t = Date.now() / 1000;
-            return Math.sin(t * 2) * 30 + 
-                   Math.sin(t * 5) * 20 + 
-                   Math.sin(t * 8) * 10 + 
-                   (Math.random() - 0.5) * 15;
+            return Math.sin(t * 2) * 30 + Math.sin(t * 5) * 20 + (Math.random() - 0.5) * 15;
+        }
+
+        function updateBiometrics(beta, alpha) {
+            const index = Math.round((beta / (alpha + beta)) * 100);
+            const stressIndexEl = document.getElementById('stressIndex');
+            const stressFillEl = document.getElementById('stressFill');
+            const stressLevelEl = document.getElementById('stressLevel');
+            const cogLoadEl = document.getElementById('cogLoad');
+            const attScoreEl = document.getElementById('attScore');
+            const summaryEl = document.getElementById('reportSummary');
+
+            stressIndexEl.innerText = index + '%';
+            stressFillEl.style.width = index + '%';
+
+            if (index > 60) {
+                stressLevelEl.innerText = 'HIGH STRESS';
+                stressLevelEl.style.color = '#ff3b30';
+                cogLoadEl.innerText = 'Overloaded';
+                attScoreEl.innerText = '42/100';
+                summaryEl.innerText = 'Warning: High beta activity detected. Recommend deep breathing exercises.';
+            } else if (index > 30) {
+                stressLevelEl.innerText = 'ELEVATED';
+                stressLevelEl.style.color = '#f59e0b';
+                cogLoadEl.innerText = 'Moderate';
+                attScoreEl.innerText = '65/100';
+                summaryEl.innerText = 'Slight tension detected. Productivity is currently stable.';
+            } else {
+                stressLevelEl.innerText = 'STABLE';
+                stressLevelEl.style.color = '#34c759';
+                cogLoadEl.innerText = 'Optimal';
+                attScoreEl.innerText = '91/100';
+                summaryEl.innerText = 'Neural harmony achieved. State of flow detected.';
+            }
         }
 
         function updateCharts() {
             if (!isScanning) return;
 
-            // Update EEG Waveforms
-            eegCharts.forEach((chart, index) => {
+            eegCharts.forEach(chart => {
                 const data = chart.data.datasets[0].data;
                 data.shift();
                 data.push(generateEEGData());
                 chart.update('none');
             });
 
-            // Update Frequency Bands
-            freqCharts.forEach(chart => {
-                const data = chart.data.datasets[0].data;
-                data.shift();
-                data.push(Math.random() * 80 + 20);
-                chart.update('none');
-            });
+            // Update Frequency Analysis
+            const freqData = [
+                Math.random() * 20 + 10, // Delta
+                Math.random() * 30 + 10, // Theta
+                Math.random() * 40 + 20, // Alpha
+                Math.random() * 20 + 5   // Beta
+            ];
+            unifiedFreqChart.data.datasets[0].data = freqData;
+            unifiedFreqChart.update('none');
 
+            updateBiometrics(freqData[3], freqData[2]);
             requestAnimationFrame(updateCharts);
         }
 
-        function startLiveScan() {
-            isScanning = true;
-            updateCharts();
-        }
-
+        function startLiveScan() { isScanning = true; updateCharts(); }
         function resetMonitor() {
             isScanning = false;
             eegCharts.forEach(chart => {
                 chart.data.datasets[0].data = Array(100).fill(0);
                 chart.update();
             });
-            freqCharts.forEach(chart => {
-                chart.data.datasets[0].data = Array(20).fill(0);
-                chart.update();
-            });
+            unifiedFreqChart.data.datasets[0].data = [0, 0, 0, 0];
+            unifiedFreqChart.update();
+            document.getElementById('stressIndex').innerText = '0%';
+            document.getElementById('stressFill').style.width = '0%';
         }
 
         // Floating Orbs Animation
         const orbsContainer = document.querySelector('.floating-orbs');
-        for (let i = 0; i < 15; i++) {
+        for (let i = 0; i < 10; i++) {
             const orb = document.createElement('div');
             orb.className = 'orb';
             orb.style.left = Math.random() * 100 + '%';
             orb.style.top = Math.random() * 100 + '%';
-            orb.style.animationDelay = Math.random() * 10 + 's';
-            orb.style.animationDuration = (15 + Math.random() * 10) + 's';
+            orb.style.animationDelay = Math.random() * 5 + 's';
             orbsContainer.appendChild(orb);
         }
     </script>
