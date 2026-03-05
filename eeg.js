@@ -40,6 +40,9 @@ function initEEGCharts() {
     eegChart2 = createChart('eegChart2', eegData[1], channelColors[1], commonOptions);
     eegChart3 = createChart('eegChart3', eegData[2], channelColors[2], commonOptions);
     eegChart4 = createChart('eegChart4', eegData[3], channelColors[3], commonOptions);
+    
+    // Display initial band values
+    displayBandValues();
 }
 
 function createChart(id, data, color, options) {
@@ -62,6 +65,7 @@ function startLiveScan() {
     if (isScanning) return;
     isScanning = true;
     updateCounter = 0;
+    displayBandValues(); // Display initial band values immediately
     if (typeof logConsole === 'function') logConsole("[SCAN] Initializing real-time neural link...");
     
     scanInterval = setInterval(() => {
@@ -91,6 +95,14 @@ function updateEEGData() {
     eegChart4?.update('none');
     
     timeStep += 0.2;
+}
+
+function displayBandValues() {
+    updateBandDisplay('delta', bandValues[0], 50, 'deltaBar');
+    updateBandDisplay('theta', bandValues[1], 50, 'thetaBar');
+    updateBandDisplay('alpha', bandValues[2], 50, 'alphaBar');
+    updateBandDisplay('beta', bandValues[3], 50, 'betaBar');
+    updateBandDisplay('gamma', bandValues[4], 50, 'gammaBar');
 }
 
 function updateBiometrics() {
@@ -173,11 +185,7 @@ function updateBiometrics() {
     ];
     
     // Update band displays with proper values and bars
-    updateBandDisplay('delta', bandValues[0], 50, 'deltaBar');
-    updateBandDisplay('theta', bandValues[1], 50, 'thetaBar');
-    updateBandDisplay('alpha', bandValues[2], 50, 'alphaBar');
-    updateBandDisplay('beta', bandValues[3], 50, 'betaBar');
-    updateBandDisplay('gamma', bandValues[4], 50, 'gammaBar');
+    displayBandValues();
     
     // Log data to console
     if (typeof logConsole === 'function') {
