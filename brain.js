@@ -14,11 +14,7 @@ function initBrain() {
     iframe.style.height = '100%';
     iframe.style.border = 'none';
     iframe.allow = 'autoplay; fullscreen; xr-spatial-tracking';
-    iframe.xr-spatial-tracking = true;
-    iframe.execution-while-out-of-viewport = true;
-    iframe.execution-while-not-rendered = true;
-    iframe.web-share = true;
-    iframe.src = 'https://sketchfab.com/models/7a27c17fd6c0488bb31ab093236a47fb/embed?autostart=1&ui_theme=dark&dnt=1';
+    iframe.src = 'https://sketchfab.com/models/7a27c17fd6c0488bb31ab093236a47fb/embed?autostart=1&ui_theme=light&dnt=1';
     
     container.appendChild(iframe);
     
@@ -51,7 +47,7 @@ function initBrain() {
 function initFallbackBrain(container) {
     // Fallback Three.js scene if Sketchfab fails
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x0a0e27);
+    scene.background = new THREE.Color(0xf5f5f5);
     
     // Camera
     camera = new THREE.PerspectiveCamera(
@@ -72,14 +68,14 @@ function initFallbackBrain(container) {
     addMouseControls();
     
     // Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
     scene.add(ambientLight);
     
-    const directionalLight1 = new THREE.DirectionalLight(0xffffff, 0.8);
+    const directionalLight1 = new THREE.DirectionalLight(0xffffff, 0.5);
     directionalLight1.position.set(5, 5, 5);
     scene.add(directionalLight1);
     
-    const directionalLight2 = new THREE.DirectionalLight(0x4488ff, 0.4);
+    const directionalLight2 = new THREE.DirectionalLight(0xaaccff, 0.3);
     directionalLight2.position.set(-5, 3, -5);
     scene.add(directionalLight2);
     
@@ -96,9 +92,9 @@ function createStylizedBrain() {
     // Main brain structure (two hemispheres)
     const hemisphereGeometry = new THREE.SphereGeometry(1, 32, 32, 0, Math.PI);
     
-    // Left hemisphere
+    // Left hemisphere - subtle pink/peach color
     const leftMaterial = new THREE.MeshPhongMaterial({
-        color: 0xff6b9d,
+        color: 0xffb4a2,
         shininess: 30,
         transparent: true,
         opacity: 0.95
@@ -111,7 +107,7 @@ function createStylizedBrain() {
     
     // Right hemisphere
     const rightMaterial = new THREE.MeshPhongMaterial({
-        color: 0xff6b9d,
+        color: 0xffb4a2,
         shininess: 30,
         transparent: true,
         opacity: 0.95
@@ -125,7 +121,7 @@ function createStylizedBrain() {
     // Cerebellum (back lower part)
     const cerebellumGeometry = new THREE.SphereGeometry(0.4, 32, 32);
     const cerebellumMaterial = new THREE.MeshPhongMaterial({
-        color: 0xff8fb3,
+        color: 0xffc4b7,
         shininess: 30,
         transparent: true,
         opacity: 0.95
@@ -139,7 +135,7 @@ function createStylizedBrain() {
     // Brain stem
     const stemGeometry = new THREE.CylinderGeometry(0.2, 0.25, 0.8, 16);
     const stemMaterial = new THREE.MeshPhongMaterial({
-        color: 0xffa5c3,
+        color: 0xffd4c7,
         shininess: 30,
         transparent: true,
         opacity: 0.95
@@ -153,7 +149,7 @@ function createStylizedBrain() {
     for (let i = 0; i < 40; i++) {
         const detailGeometry = new THREE.SphereGeometry(0.08, 8, 8);
         const detailMaterial = new THREE.MeshPhongMaterial({
-            color: 0xff5a8d,
+            color: 0xffa492,
             transparent: true,
             opacity: 0.7
         });
@@ -227,7 +223,7 @@ function updateStressVisualization(stress) {
                         channels: {
                             EmitColor: {
                                 enable: true,
-                                factor: targetStress,
+                                factor: targetStress * 0.3,
                                 color: color
                             }
                         }
@@ -236,29 +232,40 @@ function updateStressVisualization(stress) {
             }
         });
     } else if (brainMeshes.length > 0) {
-        // Update fallback Three.js materials
-        stressLevel += (targetStress - stressLevel) * 0.05;
+        // Update fallback Three.js materials with smooth transition
+        stressLevel += (targetStress - stressLevel) * 0.02;
         
         brainMeshes.forEach((mesh) => {
             if (mesh.material) {
-                const baseColor = new THREE.Color(0xff6b9d);
-                const stressColor = new THREE.Color(getStressColor(stress));
+                const baseColor = new THREE.Color(0xffb4a2);
+                const stressColor = new THREE.Color(getStressColorHex(stress));
                 mesh.material.color.lerpColors(baseColor, stressColor, stressLevel);
                 mesh.material.emissive = stressColor;
-                mesh.material.emissiveIntensity = stressLevel * 0.5;
+                mesh.material.emissiveIntensity = stressLevel * 0.3;
             }
         });
     }
 }
 
 function getStressColor(stress) {
-    // Color gradient: Green (low) -> Yellow (medium) -> Red (high)
+    // Color gradient: Soft green (low) -> Soft yellow (medium) -> Soft red (high)
     if (stress < 33) {
-        return [0.2, 1.0, 0.3]; // Green
+        return [0.6, 0.9, 0.6]; // Soft Green
     } else if (stress < 66) {
-        return [1.0, 0.8, 0.0]; // Yellow
+        return [0.9, 0.85, 0.5]; // Soft Yellow
     } else {
-        return [1.0, 0.2, 0.2]; // Red
+        return [0.9, 0.6, 0.6]; // Soft Red
+    }
+}
+
+function getStressColorHex(stress) {
+    // Hex color gradient for Three.js
+    if (stress < 33) {
+        return 0x99e699; // Soft Green
+    } else if (stress < 66) {
+        return 0xe6d980; // Soft Yellow
+    } else {
+        return 0xe69999; // Soft Red
     }
 }
 
@@ -266,7 +273,7 @@ function animate() {
     requestAnimationFrame(animate);
     
     if (brain) {
-        brain.rotation.y += 0.001;
+        brain.rotation.y += 0.0005; // Slower rotation
     }
     
     if (renderer && scene && camera) {
@@ -278,9 +285,9 @@ function animateStress() {
     // This runs for Sketchfab viewer
     setInterval(() => {
         if (sketchfabClient && targetStress !== stressLevel) {
-            stressLevel += (targetStress - stressLevel) * 0.05;
+            stressLevel += (targetStress - stressLevel) * 0.02;
         }
-    }, 50);
+    }, 100);
 }
 
 // Handle window resize
