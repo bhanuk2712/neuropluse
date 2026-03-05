@@ -3,101 +3,191 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SynapseMonitor - EEG Stress Analysis Platform</title>
+    <title>SynapseMonitor - Professional EEG Analysis Platform</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-        <script src="https://static.sketchfab.com/api/sketchfab-viewer-1.12.1.js"></script>
 </head>
 <body>
-    <header>
-        <h1>🧠 SynapseMonitor</h1>
-        <p>Professional EEG Stress Analysis Platform</p>
-        <div class="button-group">
-            <button onclick="startLive()">▶ Start Live Scan</button>
-            <button onclick="replayDataset()">⟳ Replay Dataset</button>
-            <button onclick="generateReport()">📊 Generate Report</button>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">🧠 SynapseMonitor</div>
+            <div class="version">v2.0 Professional</div>
         </div>
-    </header>
+        <nav class="sidebar-nav">
+            <div class="nav-item active" data-section="dashboard">📊 Dashboard</div>
+            <div class="nav-item" data-section="analysis">📈 Analysis</div>
+            <div class="nav-item" data-section="settings">⚙️ Settings</div>
+        </nav>
+    </div>
 
-        <section id="eeg-info-section">
-        <h2>Understanding EEG Frequency Bands</h2>
-        <div class="eeg-info-grid">
-            <div class="eeg-info-card">
-                <h3>🌊 Delta Waves (0.5-4 Hz)</h3>
-                <p><strong>When:</strong> Deep sleep, unconscious state</p>
-                <p><strong>Represents:</strong> Restorative sleep, healing, regeneration</p>
-                <p><strong>High levels:</strong> Deep relaxation, sleep</p>
-                <p><strong>Low levels:</strong> Poor sleep quality, brain injuries</p>
+    <div class="main-container">
+        <header class="top-bar">
+            <div class="header-left">
+                <h1>Professional EEG Stress Analysis Platform</h1>
+                <p class="subtitle">Real-time Neural Monitoring & Stress Detection</p>
             </div>
-            
-            <div class="eeg-info-card">
-                <h3>💭 Theta Waves (4-8 Hz)</h3>
-                <p><strong>When:</strong> Light sleep, meditation, daydreaming</p>
-                <p><strong>Represents:</strong> Creativity, intuition, memory</p>
-                <p><strong>High levels:</strong> Deep relaxation, creativity, meditation</p>
-                <p><strong>Low levels:</strong> Anxiety, stress, poor emotional awareness</p>
+            <div class="header-right">
+                <div class="status-indicator">🟢 System Online</div>
+                <div class="timestamp" id="timestamp"></div>
             </div>
-            
-            <div class="eeg-info-card">
-                <h3>🧘 Alpha Waves (8-13 Hz)</h3>
-                <p><strong>When:</strong> Relaxed wakefulness, calm focus</p>
-                <p><strong>Represents:</strong> Restful alertness, calmness, reduced stress</p>
-                <p><strong>High levels:</strong> Relaxation, daydreaming, brain idling</p>
-                <p><strong>Low levels:</strong> Anxiety, high stress, insomnia, OCD</p>
+        </header>
+
+        <div class="content-wrapper">
+            <!-- Control Panel -->
+            <section class="control-panel">
+                <div class="control-grid">
+                    <button class="btn btn-primary" onclick="startLiveScan()">
+                        <span class="btn-icon">▶</span> START LIVE SCAN
+                    </button>
+                    <button class="btn btn-secondary" onclick="replayDataset()">
+                        <span class="btn-icon">⟳</span> REPLAY DATASET
+                    </button>
+                    <button class="btn btn-secondary" onclick="generateReport()">
+                        <span class="btn-icon">📋</span> GENERATE REPORT
+                    </button>
+                </div>
+            </section>
+
+            <!-- Main Dashboard Grid -->
+            <div class="dashboard-grid">
+                <!-- EEG Waveform Chart -->
+                <section class="dashboard-card card-lg">
+                    <div class="card-header">
+                        <h2>Real-Time EEG Waveform</h2>
+                        <div class="card-tools">
+                            <span class="badge">4-Channel Monitor</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="eegChart"></canvas>
+                    </div>
+                </section>
+
+                <!-- Frequency Analysis -->
+                <section class="dashboard-card card-lg">
+                    <div class="card-header">
+                        <h2>Frequency Band Analysis</h2>
+                        <div class="card-tools">
+                            <span class="badge">Spectral Analysis</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="bandChart"></canvas>
+                    </div>
+                </section>
+
+                <!-- Stress Indicator -->
+                <section class="dashboard-card card-md">
+                    <div class="card-header">
+                        <h2>Stress Level</h2>
+                    </div>
+                    <div class="card-body stress-card">
+                        <div class="stress-gauge">
+                            <div class="gauge-value" id="stress">0%</div>
+                            <div class="gauge-label">Current Stress</div>
+                        </div>
+                        <div class="stress-status" id="stressLabel">Relaxed</div>
+                    </div>
+                </section>
+
+                <!-- Metrics Panel -->
+                <section class="dashboard-card card-md">
+                    <div class="card-header">
+                        <h2>Live Metrics</h2>
+                    </div>
+                    <div class="card-body metrics-grid">
+                        <div class="metric-item">
+                            <span class="metric-label">Heart Rate</span>
+                            <span class="metric-value" id="heartRate">72</span>
+                            <span class="metric-unit">BPM</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Oxygen Level</span>
+                            <span class="metric-value" id="oxygenLevel">98</span>
+                            <span class="metric-unit">%</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Signal Quality</span>
+                            <span class="metric-value" id="signalQuality">95</span>
+                            <span class="metric-unit">%</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Session Duration</span>
+                            <span class="metric-value" id="duration">00:00</span>
+                            <span class="metric-unit">MM:SS</span>
+                        </div>
+                    </div>
+                </section>
             </div>
-            
-            <div class="eeg-info-card">
-                <h3>⚡ Beta Waves (13-30 Hz)</h3>
-                <p><strong>When:</strong> Active thinking, focus, problem-solving</p>
-                <p><strong>Represents:</strong> Alert consciousness, concentration</p>
-                <p><strong>High levels:</strong> Anxiety, high arousal, stress, paranoia</p>
-                <p><strong>Low levels:</strong> Daydreaming, poor cognition, depression</p>
-            </div>
-            
-            <div class="eeg-info-card">
-                <h3>🚀 Gamma Waves (30-100 Hz)</h3>
-                <p><strong>When:</strong> Peak concentration, high-level information processing</p>
-                <p><strong>Represents:</strong> Learning, memory, information processing</p>
-                <p><strong>High levels:</strong> Learning, peak focus, expanded consciousness</p>
-                <p><strong>Low levels:</strong> Learning disabilities, memory problems, ADHD</p>
-            </div>
+
+            <!-- EEG Bands Information Section -->
+            <section class="eeg-info-section">
+                <h2>EEG Frequency Bands Reference</h2>
+                <div class="bands-grid">
+                    <div class="band-card">
+                        <div class="band-icon">🌊</div>
+                        <h3>Delta Waves (0.5-4 Hz)</h3>
+                        <p><strong>State:</strong> Deep sleep, Unconscious</p>
+                        <p><strong>Function:</strong> Restoration, Healing, Cell regeneration</p>
+                        <p><strong>Optimal Level:</strong> During sleep (8+ hours/night)</p>
+                    </div>
+                    <div class="band-card">
+                        <div class="band-icon">💭</div>
+                        <h3>Theta Waves (4-8 Hz)</h3>
+                        <p><strong>State:</strong> Light sleep, Meditation, Daydreaming</p>
+                        <p><strong>Function:</strong> Creativity, Memory consolidation, Intuition</p>
+                        <p><strong>Optimal Level:</strong> 20% of waking time</p>
+                    </div>
+                    <div class="band-card">
+                        <div class="band-icon">🧘</div>
+                        <h3>Alpha Waves (8-13 Hz)</h3>
+                        <p><strong>State:</strong> Relaxed alertness, Calm focus</p>
+                        <p><strong>Function:</strong> Stress relief, Relaxation, Meditation</p>
+                        <p><strong>Optimal Level:</strong> 40% during waking hours</p>
+                    </div>
+                    <div class="band-card">
+                        <div class="band-icon">⚡</div>
+                        <h3>Beta Waves (13-30 Hz)</h3>
+                        <p><strong>State:</strong> Alert, Active thinking, Problem-solving</p>
+                        <p><strong>Function:</strong> Concentration, Focus, Decision-making</p>
+                        <p><strong>Optimal Level:</strong> 40-50% during work/study</p>
+                    </div>
+                    <div class="band-card">
+                        <div class="band-icon">🚀</div>
+                        <h3>Gamma Waves (30-100 Hz)</h3>
+                        <p><strong>State:</strong> Peak concentration, Learning</p>
+                        <p><strong>Function:</strong> Information processing, Peak awareness</p>
+                        <p><strong>Optimal Level:</strong> 10-20% during peak mental tasks</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Console Section -->
+            <section class="console-section">
+                <h2>System Console</h2>
+                <div class="console" id="console">
+                    <div class="console-line">[INIT] SynapseMonitor System initialized...</div>
+                    <div class="console-line">[READY] System ready - Awaiting commands</div>
+                </div>
+            </section>
         </div>
-    </section>
-
-    <section id="eeg-section">
-        <h2>Multi-Channel EEG Monitor</h2>
-        <canvas id="eegChart"></canvas>
-    </section>
-
-    <section id="band-section">
-        <h2>Frequency Band Analysis</h2>
-        <canvas id="bandChart"></canvas>
-        <div class="bands">
-            <div><strong>Delta:</strong> <span id="delta">0</span> µV²</div>
-            <div><strong>Theta:</strong> <span id="theta">0</span> µV²</div>
-            <div><strong>Alpha:</strong> <span id="alpha">0</span> µV²</div>
-            <div><strong>Beta:</strong> <span id="beta">0</span> µV²</div>
-            <div><strong>Gamma:</strong> <span id="gamma">0</span> µV²</div>
-        </div>
-    </section>
-
-    <section id="stress-section">
-        <h2>Stress Level Indicator</h2>
-        <div class="stress-container">
-            <div id="stressBar" class="stress-bar"></div>
-            <h3 id="stress">Stress: 0%</h3>
-            <p id="stressLabel">Status: Relaxed</p>
-        </div>
-    </section>
-
-    <section id="console-section">
-        <h2>System Console</h2>
-        <div id="console" class="console"></div>
-    </section>
+    </div>
 
     <script src="eeg.js"></script>
     <script src="report.js"></script>
+    <script>
+        // Update timestamp
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('timestamp').textContent = now.toLocaleTimeString();
+        }, 1000);
+
+        // Initialize on page load
+        window.addEventListener('load', () => {
+            initEEGCharts();
+            addConsoleLog('[SYSTEM] All modules loaded successfully');
+        });
+    </script>
 </body>
 </html>
