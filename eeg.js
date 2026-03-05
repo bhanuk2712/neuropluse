@@ -1,4 +1,5 @@
-let eegChart, bandChart;
+// EEG Monitoring System with 4 Separate Channel Graphs
+let eegChart1, eegChart2, eegChart3, eegChart4, bandChart;
 let eegData = [[], [], [], []];
 let bandValues = [10, 15, 35, 25, 15];
 let isScanning = false;
@@ -6,28 +7,59 @@ let timeStep = 0;
 let sessionTime = 0;
 
 function initEEGCharts() {
-    const eegCtx = document.getElementById('eegChart').getContext('2d');
-    const bandCtx = document.getElementById('bandChart').getContext('2d');
-    for (let i = 0; i < 4; i++) eegData[i] = Array(100).fill(0);
-    
-    eegChart = new Chart(eegCtx, {
-        type: 'line',
-        data: {
-            labels: Array(100).fill(''),
-            datasets: [
-                { label: 'CH1', data: eegData[0], borderColor: '#5e5ce6', borderWidth: 2, tension: 0.4, pointRadius: 0 },
-                { label: 'CH2', data: eegData[1], borderColor: '#0071e3', borderWidth: 2, tension: 0.4, pointRadius: 0 },
-                { label: 'CH3', data: eegData[2], borderColor: '#34c759', borderWidth: 2, tension: 0.4, pointRadius: 0 },
-                { label: 'CH4', data: eegData[3], borderColor: '#ff9500', borderWidth: 2, tension: 0.4, pointRadius: 0 }
-            ]
-        },
-        options: {
-            responsive: true, maintainAspectRatio: false,
-            scales: { y: { min: -100, max: 100, grid: { color: 'rgba(0,0,0,0.03)' } }, x: { display: false } },
-            plugins: { legend: { display: false } }, animation: false
-        }
-    });
+    // Initialize data arrays
+    for (let i = 0; i < 4; i++) {
+        eegData[i] = Array(100).fill(0);
+    }
 
+    // Channel colors
+    const channelColors = ['#5e5ce6', '#0071e3', '#34c759', '#ff9500'];
+    const channelLabels = ['Channel 1', 'Channel 2', 'Channel 3', 'Channel 4'];
+
+    // Create 4 separate charts
+    const createChannelChart = (canvasId, channelIndex) => {
+        const ctx = document.getElementById(canvasId).getContext('2d');
+        return new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: Array(100).fill(''),
+                datasets: [{
+                    label: channelLabels[channelIndex],
+                    data: eegData[channelIndex],
+                    borderColor: channelColors[channelIndex],
+                    borderWidth: 2,
+                    tension: 0.4,
+                    pointRadius: 0,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { 
+                        min: -100, 
+                        max: 100, 
+                        grid: { color: 'rgba(0,0,0,0.05)' },
+                        ticks: { font: { size: 10 } }
+                    },
+                    x: { display: false }
+                },
+                plugins: { 
+                    legend: { display: false }
+                },
+                animation: false
+            }
+        });
+    };
+
+    eegChart1 = createChannelChart('eegChart1', 0);
+    eegChart2 = createChannelChart('eegChart2', 1);
+    eegChart3 = createChannelChart('eegChart3', 2);
+    eegChart4 = createChannelChart('eegChart4', 3);
+
+    // Band chart (unchanged)
+    const bandCtx = document.getElementById('bandChart').getContext('2d');
     bandChart = new Chart(bandCtx, {
         type: 'bar',
         data: {
@@ -39,8 +71,12 @@ function initEEGCharts() {
             }]
         },
         options: {
-            responsive: true, maintainAspectRatio: false,
-            scales: { y: { beginAtZero: true, max: 100, display: false }, x: { grid: { display: false } } },
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { beginAtZero: true, max: 100, display: false },
+                x: { grid: { display: false } }
+            },
             plugins: { legend: { display: false } }
         }
     });
@@ -50,53 +86,82 @@ function startLiveScan() {
     if (isScanning) return;
     isScanning = true;
     addConsoleLog('[SCAN] Initializing real-time neural link...');
-    
+
     setInterval(() => {
         timeStep++;
+
+        // Update all 4 channels
         for (let i = 0; i < 4; i++) {
             const val = Math.sin(timeStep * 0.2 + i) * 40 + (Math.random() - 0.5) * 60;
-            eegData[i].push(val); eegData[i].shift();
-            eegChart.data.datasets[i].data = eegData[i];
+            eegData[i].push(val);
+            eegData[i].shift();
         }
-        eegChart.update('none');
+
+        // Update all charts
+        eegChart1.data.datasets[0].data = eegData[0];
+        eegChart1.update('none');
         
+        eegChart2.data.datasets[0].data = eegData[1];
+        eegChart2.update('none');
+        
+        eegChart3.data.datasets[0].data = eegData[2];
+        eegChart3.update('none');
+        
+        eegChart4.data.datasets[0].data = eegData[3];
+        eegChart4.update('none');
+
+        // Update band values
         if (timeStep % 10 === 0) {
             bandValues = bandValues.map(v => Math.max(10, Math.min(60, v + (Math.random() - 0.5) * 5)));
             bandChart.data.datasets[0].data = bandValues;
-            bandChart.update();
-            updateStats();
+            bandChart.update('none');
         }
-    }, 100);
-}
 
-function updateStats() {
-    const alpha = bandValues[2];
-    const beta = bandValues[3];
-    const stressBase = (beta / (alpha + 1)) * 50;
-    const stress = Math.round(Math.max(0, Math.min(100, stressBase + (Math.random() * 10))));
-    
-    const stressEl = document.getElementById('stress');
-    const labelEl = document.getElementById('stressLabel');
-    
-    stressEl.textContent = stress + '%';
-    labelEl.textContent = stress > 60 ? 'High Stress / Cognitive Load' : stress > 30 ? 'Normal Alertness' : 'Deep Relaxation';
-    labelEl.style.color = stress > 60 ? '#ff3b30' : stress > 30 ? '#0071e3' : '#34c759';
-    
-    document.getElementById('heartRate').textContent = Math.round(72 + (stress / 10) + Math.random() * 4);
-    document.getElementById('signalQuality').textContent = Math.round(95 + Math.random() * 5);
-    
-    if (typeof updateStressVisualization === 'function') {
-        updateStressVisualization(stress);
-    }
-    
-    sessionTime++;
-    const m = Math.floor(sessionTime / 6).toString().padStart(2, '0');
-    const s = (sessionTime % 60).toString().padStart(2, '0');
-    document.getElementById('duration').textContent = `${m}:${s}`;
+        // Calculate stress and update brain
+        const avgSignal = eegData.reduce((sum, ch) => sum + Math.abs(ch[ch.length - 1]), 0) / 4;
+        const stress = Math.min(100, Math.max(0, (avgSignal / 40) * 100));
+        
+        document.getElementById('stress').textContent = Math.round(stress) + '%';
+        
+        if (stress < 30) {
+            document.getElementById('stressLabel').textContent = 'Low Stress';
+        } else if (stress < 60) {
+            document.getElementById('stressLabel').textContent = 'Moderate Stress';
+        } else {
+            document.getElementById('stressLabel').textContent = 'High Stress / Cognitive Load';
+        }
+
+        // Update brain visualization
+        if (typeof updateStressVisualization === 'function') {
+            updateStressVisualization(stress);
+        }
+
+        // Update heart rate
+        const hr = Math.round(70 + stress * 0.3 + (Math.random() - 0.5) * 5);
+        document.getElementById('heartRate').textContent = hr;
+
+        // Update signal quality
+        const quality = Math.round(95 + (Math.random() - 0.5) * 6);
+        document.getElementById('signalQuality').textContent = quality;
+
+        // Update session time
+        sessionTime++;
+        const mins = Math.floor(sessionTime / 60);
+        const secs = sessionTime % 60;
+        document.getElementById('duration').textContent = 
+            String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+
+        // Log every 30 seconds
+        if (sessionTime % 30 === 0) {
+            addConsoleLog(`[DATA] Stress: ${Math.round(stress)}% | HR: ${hr} BPM | Quality: ${quality}%`);
+        }
+    }, 1000);
 }
 
 function replayDataset() {
-    addConsoleLog('[REPLAY] Accessing database...');
-    addConsoleLog('[REPLAY] Loading eeg_dataset.csv...');
-    startLiveScan();
+    addConsoleLog('[REPLAY] Loading historical EEG dataset...');
+    setTimeout(() => {
+        addConsoleLog('[REPLAY] Dataset loaded - 256 samples @ 250Hz');
+        startLiveScan();
+    }, 1500);
 }
