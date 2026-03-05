@@ -10,7 +10,7 @@
 <body>
     <div class="background-gradient"></div>
     <div class="floating-orbs"></div>
-    
+
     <header class="premium-header">
         <div class="header-container">
             <div class="logo-section">
@@ -26,7 +26,7 @@
             </div>
         </div>
     </header>
-    
+
     <main class="dashboard-container">
         <!-- Top Row: Live Feed & Signal Status -->
         <section class="top-row">
@@ -46,7 +46,7 @@
                     <p class="feed-text">Real-time neural signal streaming at 250Hz</p>
                 </div>
             </div>
-            
+
             <div class="status-panel">
                 <div class="status-card">
                     <label>Signal Quality</label>
@@ -58,59 +58,57 @@
                         <div class="progress-text"><span id="signalQuality">0</span>%</div>
                     </div>
                 </div>
-                
+
                 <div class="status-card">
-                    <label>Heart Rate</label>
-                    <div class="heart-display">
-                        <span class="heart-icon" id="heartIcon">♡</span>
-                        <div class="heart-value">
-                            <span id="heartRate">0</span>
-                            <small>BPM</small>
+                    <label>Heart Rate / Session</label>
+                    <div style="display: flex; flex-direction: column; gap: 5px; align-items: flex-end;">
+                        <div class="heart-display" style="padding: 8px 12px; transform: scale(0.9);">
+                            <span class="heart-icon" id="heartIcon">♡</span>
+                            <div class="heart-value">
+                                <span id="heartRate">0</span>
+                                <small>BPM</small>
+                            </div>
+                        </div>
+                        <div class="timer-display" style="font-size: 18px; padding: 5px 10px; min-width: 80px;">
+                            <span id="duration">00:00</span>
                         </div>
                     </div>
                 </div>
-                
-                <div class="status-card">
-                    <label>Session Time</label>
-                    <div class="timer-display">
-                        <span id="duration">00:00</span>
-                    </div>
-                </div>
-                
+
                 <div class="action-buttons">
                     <button class="btn btn-primary" onclick="startLiveScan()">🔬 Start Scan</button>
-                    <button class="btn btn-secondary" onclick="replayDataset()">📂 Replay Data</button>
-                    <button class="btn btn-accent" onclick="generateReport()">📋 Get Report</button>
+                    <button id="pauseBtn" class="btn btn-pause" onclick="togglePause()">⏸ Pause Scan</button>
+                    <button id="nextBtn" class="btn btn-next" onclick="nextPerson()">👤 Next Person</button>
                 </div>
             </div>
         </section>
-        
+
         <!-- Middle Row: EEG Waveforms -->
         <section class="waveform-section">
-            <div class="section-title">
-                <h3>Multi-Channel Waveforms</h3>
-                <span class="sampling-rate">250Hz Sampling</span>
+            <div class="section-title" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h3 style="font-size: 1rem;">Multi-Channel Waveforms</h3>
+                <span class="sampling-rate" style="font-size: 0.7rem; color: var(--text-dim);">250Hz Sampling</span>
             </div>
             <div class="waveform-grid">
                 <div class="chart-card">
-                    <div class="chart-header"><span>CH1 - Frontal (Fp1)</span></div>
-                    <div class="canvas-container"><canvas id="eegChart1"></canvas></div>
+                    <div class="chart-header" style="font-size: 0.75rem; margin-bottom: 5px;"><span>CH1 - Frontal (Fp1)</span></div>
+                    <div class="canvas-container" style="height: 120px;"><canvas id="eegChart1"></canvas></div>
                 </div>
                 <div class="chart-card">
-                    <div class="chart-header"><span>CH2 - Frontal (Fp2)</span></div>
-                    <div class="canvas-container"><canvas id="eegChart2"></canvas></div>
+                    <div class="chart-header" style="font-size: 0.75rem; margin-bottom: 5px;"><span>CH2 - Frontal (Fp2)</span></div>
+                    <div class="canvas-container" style="height: 120px;"><canvas id="eegChart2"></canvas></div>
                 </div>
                 <div class="chart-card">
-                    <div class="chart-header"><span>CH3 - Temporal (T3)</span></div>
-                    <div class="canvas-container"><canvas id="eegChart3"></canvas></div>
+                    <div class="chart-header" style="font-size: 0.75rem; margin-bottom: 5px;"><span>CH3 - Temporal (T3)</span></div>
+                    <div class="canvas-container" style="height: 120px;"><canvas id="eegChart3"></canvas></div>
                 </div>
                 <div class="chart-card">
-                    <div class="chart-header"><span>CH4 - Occipital (O1)</span></div>
-                    <div class="canvas-container"><canvas id="eegChart4"></canvas></div>
+                    <div class="chart-header" style="font-size: 0.75rem; margin-bottom: 5px;"><span>CH4 - Occipital (O1)</span></div>
+                    <div class="canvas-container" style="height: 120px;"><canvas id="eegChart4"></canvas></div>
                 </div>
             </div>
         </section>
-        
+
         <!-- Bottom Row: Frequency Analysis & Biometric -->
         <section class="analysis-section">
             <div class="analysis-grid">
@@ -122,70 +120,49 @@
                     <div class="band-container">
                         <div class="band-bar">
                             <div class="band-label">Delta</div>
-                            <div class="band-bar-fill">
-                                <div class="band-bar-progress" id="deltaBar" style="width: 0%" data-value="0"></div>
-                            </div>
+                            <div class="band-bar-fill"><div class="band-bar-progress" id="deltaBar" style="width: 0%"></div></div>
                             <div class="band-value" id="delta">0</div>
                         </div>
                         <div class="band-bar">
                             <div class="band-label">Theta</div>
-                            <div class="band-bar-fill">
-                                <div class="band-bar-progress" id="thetaBar" style="width: 0%" data-value="0"></div>
-                            </div>
+                            <div class="band-bar-fill"><div class="band-bar-progress" id="thetaBar" style="width: 0%"></div></div>
                             <div class="band-value" id="theta">0</div>
                         </div>
                         <div class="band-bar">
                             <div class="band-label">Alpha</div>
-                            <div class="band-bar-fill">
-                                <div class="band-bar-progress" id="alphaBar" style="width: 0%" data-value="0"></div>
-                            </div>
+                            <div class="band-bar-fill"><div class="band-bar-progress" id="alphaBar" style="width: 0%"></div></div>
                             <div class="band-value" id="alpha">0</div>
                         </div>
                         <div class="band-bar">
                             <div class="band-label">Beta</div>
-                            <div class="band-bar-fill">
-                                <div class="band-bar-progress" id="betaBar" style="width: 0%" data-value="0"></div>
-                            </div>
+                            <div class="band-bar-fill"><div class="band-bar-progress" id="betaBar" style="width: 0%"></div></div>
                             <div class="band-value" id="beta">0</div>
                         </div>
                         <div class="band-bar">
                             <div class="band-label">Gamma</div>
-                            <div class="band-bar-fill">
-                                <div class="band-bar-progress" id="gammaBar" style="width: 0%" data-value="0"></div>
-                            </div>
+                            <div class="band-bar-fill"><div class="band-bar-progress" id="gammaBar" style="width: 0%"></div></div>
                             <div class="band-value" id="gamma">0</div>
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="report-card">
                     <div class="report-header">
                         <h3>Biometric Analysis</h3>
                         <div class="stress-badge" id="stressLabel">IDLE</div>
                     </div>
-                    
                     <div class="biometric-grid">
                         <div class="biometric-item">
                             <div class="biometric-label">Stress Level</div>
-                            <div class="stress-meter">
-                                <div class="meter-bar">
-                                    <div class="meter-fill" id="stressFill" style="width: 0%"></div>
-                                </div>
-                                <div class="meter-value" id="stress">0%</div>
-                            </div>
+                            <div class="meter-bar"><div class="meter-fill" id="stressFill" style="width: 0%"></div></div>
+                            <div class="meter-value" id="stress">0%</div>
                         </div>
-                        
                         <div class="biometric-item">
                             <div class="biometric-label">Focus Level</div>
-                            <div class="focus-indicator">
-                                <div class="focus-bar">
-                                    <div class="focus-fill" id="focusFill" style="width: 0%"></div>
-                                </div>
-                                <div class="focus-value" id="focus">0%</div>
-                            </div>
+                            <div class="focus-bar"><div class="focus-fill" id="focusFill" style="width: 0%"></div></div>
+                            <div class="focus-value" id="focus">0%</div>
                         </div>
                     </div>
-                    
                     <div class="console-box" id="console">
                         <div class="console-line">> System initialized. Ready for scan.</div>
                     </div>
@@ -193,16 +170,13 @@
             </div>
         </section>
     </main>
-    
+
     <footer class="dashboard-footer">
-        <p>SynapseMonitor Pro v2.1 | Research Grade Simulation</p>
+        <p>SynapseMonitor Pro v2.2 | Research Grade Simulation</p>
     </footer>
-    
-    <!-- External Logic -->
+
     <script src="eeg.js"></script>
-    <script src="report.js"></script>
     <script>
-        // Global console helper
         function addConsoleLog(msg) {
             const consoleBox = document.getElementById('console');
             if (consoleBox) {
@@ -211,17 +185,14 @@
                 line.textContent = '> ' + msg;
                 consoleBox.appendChild(line);
                 consoleBox.scrollTop = consoleBox.scrollHeight;
-                // Keep only last 8 lines
-                while (consoleBox.children.length > 8) {
-                    consoleBox.removeChild(consoleBox.firstChild);
-                }
+                while (consoleBox.children.length > 6) consoleBox.removeChild(consoleBox.firstChild);
             }
         }
         function logConsole(msg) { addConsoleLog(msg); }
-        
-        // Initialize everything
+
         window.onload = () => {
             if (typeof initEEGCharts === 'function') initEEGCharts();
+            logConsole("System core v2.2 active.");
         };
     </script>
 </body>
