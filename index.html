@@ -6,6 +6,8 @@
     <title>SynapseMonitor - Professional EEG Analysis</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://static.sketchfab.com/api/sketchfab-viewer-1.12.1.js"></script>
 </head>
 <body>
     <div class="background-gradient"></div>
@@ -44,6 +46,17 @@
 
     <main class="main-content">
         <div class="dashboard-grid">
+            <!-- 3D Brain Visualization -->
+            <div class="glass-card premium-large">
+                <div class="card-header">
+                    <h3>3D Neural Activity Mapping</h3>
+                    <span class="card-badge">Live Visualization</span>
+                </div>
+                <div class="card-content" id="brainContainer" style="height: 400px; width: 100%;">
+                    <!-- Brain model will be injected here -->
+                </div>
+            </div>
+
             <div class="glass-card premium-large">
                 <div class="card-header">
                     <h3>Real-Time EEG Waveform</h3>
@@ -119,6 +132,7 @@
         <p>SynapseMonitor © 2026 | World-Class Scientific Analytics</p>
     </footer>
 
+    <script src="brain.js"></script>
     <script src="eeg.js"></script>
     <script>
         window.addEventListener('load', () => {
