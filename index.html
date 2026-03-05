@@ -39,45 +39,35 @@
                 <button class="btn btn-secondary" onclick="replayDataset()">
                     <span class="btn-icon">⟳</span> REPLAY DATASET
                 </button>
+                
             </div>
         </div>
     </section>
 
     <main class="main-content">
         <div class="dashboard-grid">
-            <!-- 3D Brain Visualization -->
-            <div class="glass-card premium-large">
-                <div class="card-header">
-                    <h3>3D Neural Activity Mapping</h3>
-                    <span class="card-badge">Live Visualization</span>
-                </div>
-                <div class="card-content" id="brainContainer" style="height: 400px; width: 100%;">
-                    <!-- Brain model will be injected here -->
-                </div>
-            </div>
-
+            <!
             <div class="glass-card premium-large">
                 <div class="card-header">
                     <h3>Real-Time EEG Waveform</h3>
                     <span class="card-badge">4-Channel Monitor</span>
                 </div>
                 <div class="card-content">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; height: 100%;">
-                    <div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; height: 100%; padding: 20px;">                    <div>
                         <h4 style="margin: 0 0 10px 0; font-size: 14px; color: #666;">Channel 1</h4>
-                        <canvas id="eegChart1" style="height: 180px;"></canvas>
+                        <canvas id="eegChart1" style="height: 220px;"></canvas>
                     </div>
                     <div>
                         <h4 style="margin: 0 0 10px 0; font-size: 14px; color: #666;">Channel 2</h4>
-                        <canvas id="eegChart2" style="height: 180px;"></canvas>
+                        <canvas id="eegChart2" style="height: 220px;"></canvas>
                     </div>
                     <div>
                         <h4 style="margin: 0 0 10px 0; font-size: 14px; color: #666;">Channel 3</h4>
-                        <canvas id="eegChart3" style="height: 180px;"></canvas>
+                        <canvas id="eegChart3" style="height: 220px;"></canvas>
                     </div>
                     <div>
                         <h4 style="margin: 0 0 10px 0; font-size: 14px; color: #666;">Channel 4</h4>
-                        <canvas id="eegChart4" style="height: 180px;"></canvas>
+                        <canvas id="eegChart4" style="height: 220px;"></canvas>
                     </div>
                 </div>                </div>
             </div>
