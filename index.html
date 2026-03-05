@@ -4,37 +4,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SynapseMonitor - Professional EEG Analysis</title>
-    <link rel="stylesheet" href="style.css">
+    >
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 </head>
 <body>
     <div class="background-gradient"></div>
     <div class="floating-orbs"></div>
-    
+
     <header class="premium-header">
         <div class="header-container">
             <div class="logo-section">
                 <div class="logo-icon">🧠</div>
-                <h1>SynapseMonitor</h1>
-                <p class="tagline">Advanced Neural Monitoring</p>
+                <div class="logo-text">
+                    <h1>SynapseMonitor</h1>
+                    <p class="tagline">Advanced Neural Monitoring</p>
+                </div>
             </div>
             <div class="header-status">
                 <span class="status-dot"></span>
-                <span>System Active</span>
+                <span>System Online</span>
             </div>
         </div>
     </header>
 
     <section class="hero-section">
         <div class="hero-content">
-            <h2>Professional EEG Stress Analysis Platform</h2>
-            <p>Real-time neural monitoring with advanced signal processing</p>
+            <h2>Professional EEG Stress Analysis</h2>
+            <p>Real-time neural monitoring with precision signal processing.</p>
             <div class="control-buttons">
                 <button class="btn btn-primary" onclick="startLiveScan()">
-                    <span class="btn-icon">▶</span>START LIVE SCAN
+                    <span class="btn-icon">▶</span> START LIVE SCAN
                 </button>
                 <button class="btn btn-secondary" onclick="replayDataset()">
-                    <span class="btn-icon">⟳</span>REPLAY DATASET
+                    <span class="btn-icon">⟳</span> REPLAY DATASET
                 </button>
             </div>
         </div>
@@ -46,10 +48,10 @@
             <div class="glass-card premium-large">
                 <div class="card-header">
                     <h3>Real-Time EEG Waveform</h3>
-                    <span class="card-badge">4-Channel</span>
+                    <span class="card-badge">4-Channel Monitor</span>
                 </div>
                 <div class="card-content">
-                    <canvas id="eegChart"></canvas>
+                    anvas id="eegChart"></canvas>
                 </div>
             </div>
 
@@ -57,102 +59,77 @@
             <div class="glass-card premium-large">
                 <div class="card-header">
                     <h3>Frequency Band Analysis</h3>
-                    <span class="card-badge">Spectral</span>
+                    <span class="card-badge">Spectral Density</span>
                 </div>
                 <div class="card-content">
-                    <canvas id="bandChart"></canvas>
+                    anvas id="bandChart"></canvas>
                 </div>
             </div>
 
             <!-- Stress Indicator -->
             <div class="glass-card premium-medium">
                 <div class="card-header">
-                    <h3>Stress Level</h3>
+                    <h3>Current Stress Level</h3>
                 </div>
                 <div class="stress-display">
                     <div class="stress-circle">
                         <div class="stress-value" id="stress">0%</div>
                     </div>
-                    <div class="stress-label" id="stressLabel">Relaxed</div>
+                    <div class="stress-label" id="stressLabel">Awaiting Data...</div>
                 </div>
             </div>
 
             <!-- Live Metrics -->
             <div class="glass-card premium-medium">
                 <div class="card-header">
-                    <h3>Live Metrics</h3>
+                    <h3>Bio-Metrics</h3>
                 </div>
                 <div class="metrics-display">
                     <div class="metric">
-                        <span>Heart Rate</span>
-                        <div class="metric-value" id="heartRate">72</div>
+                        <span class="metric-label">Heart Rate</span>
+                        <div class="metric-value" id="heartRate">--</div>
                         <span class="unit">BPM</span>
                     </div>
                     <div class="metric">
-                        <span>Signal Quality</span>
-                        <div class="metric-value" id="signalQuality">95</div>
-                        <span class="unit">%</span>
+                        <span class="metric-label">Oxygen Level</span>
+                        <div class="metric-value" id="oxygenLevel">98</div>
+                        <span class="unit">% SpO2</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Signal Quality</span>
+                        <div class="metric-value" id="signalQuality">--</div>
+                        <span class="unit">% Confidence</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Duration</span>
+                        <div class="metric-value" id="duration">00:00</div>
+                        <span class="unit">MM:SS</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- EEG Reference Section -->
-        <section class="reference-section">
-            <h2>EEG Frequency Bands</h2>
-            <div class="bands-showcase">
-                <div class="band-card premium-small">
-                    <div class="band-icon">🌊</div>
-                    <h4>Delta (0.5-4 Hz)</h4>
-                    <p>Deep sleep & restoration</p>
-                </div>
-                <div class="band-card premium-small">
-                    <div class="band-icon">💭</div>
-                    <h4>Theta (4-8 Hz)</h4>
-                    <p>Creativity & meditation</p>
-                </div>
-                <div class="band-card premium-small">
-                    <div class="band-icon">🧘</div>
-                    <h4>Alpha (8-13 Hz)</h4>
-                    <p>Relaxed alertness</p>
-                </div>
-                <div class="band-card premium-small">
-                    <div class="band-icon">⚡</div>
-                    <h4>Beta (13-30 Hz)</h4>
-                    <p>Active thinking</p>
-                </div>
-                <div class="band-card premium-small">
-                    <div class="band-icon">🚀</div>
-                    <h4>Gamma (30-100 Hz)</h4>
-                    <p>Peak concentration</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- System Console -->
         <section class="console-section">
-            <h2>System Console</h2>
+            <h3>System Console</h3>
             <div class="console-display">
                 <div id="console">
-                    <div class="log-line">[INIT] SynapseMonitor initialized</div>
-                    <div class="log-line">[READY] System ready</div>
+                    <div class="log-line">[INIT] SynapseMonitor v2.0 ready...</div>
                 </div>
             </div>
         </section>
     </main>
 
     <footer class="premium-footer">
-        <p>SynapseMonitor © 2026 | Professional EEG Analysis Platform</p>
+        <p>SynapseMonitor © 2026 | World-Class Scientific Analytics</p>
     </footer>
 
     <script src="eeg.js"></script>
-    <script src="report.js"></script>
     <script>
         window.addEventListener('load', () => {
             initEEGCharts();
             addConsoleLog('[SYSTEM] All systems operational');
         });
-        
+
         function addConsoleLog(msg) {
             const console_el = document.getElementById('console');
             const line = document.createElement('div');
@@ -164,3 +141,4 @@
     </script>
 </body>
 </html>
+
