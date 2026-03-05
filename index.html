@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SynapseMonitor - Professional EEG Analysis</title>
-    >
+    <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 </head>
 <body>
@@ -44,29 +44,26 @@
 
     <main class="main-content">
         <div class="dashboard-grid">
-            <!-- EEG Waveform Card -->
             <div class="glass-card premium-large">
                 <div class="card-header">
                     <h3>Real-Time EEG Waveform</h3>
                     <span class="card-badge">4-Channel Monitor</span>
                 </div>
                 <div class="card-content">
-                    anvas id="eegChart"></canvas>
+                    <canvas id="eegChart"></canvas>
                 </div>
             </div>
 
-            <!-- Frequency Analysis Card -->
             <div class="glass-card premium-large">
                 <div class="card-header">
                     <h3>Frequency Band Analysis</h3>
                     <span class="card-badge">Spectral Density</span>
                 </div>
                 <div class="card-content">
-                    anvas id="bandChart"></canvas>
+                    <canvas id="bandChart"></canvas>
                 </div>
             </div>
 
-            <!-- Stress Indicator -->
             <div class="glass-card premium-medium">
                 <div class="card-header">
                     <h3>Current Stress Level</h3>
@@ -79,7 +76,6 @@
                 </div>
             </div>
 
-            <!-- Live Metrics -->
             <div class="glass-card premium-medium">
                 <div class="card-header">
                     <h3>Bio-Metrics</h3>
@@ -141,4 +137,3 @@
     </script>
 </body>
 </html>
-
