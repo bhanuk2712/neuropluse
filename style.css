@@ -99,8 +99,7 @@ canvas {
 .card-content {
     display: flex;
     align-items: center;
-    justify-content: center;
-    min-height: 300px;
+        min-height: 300px;
 }
 
 .stress-display { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 240px; }
